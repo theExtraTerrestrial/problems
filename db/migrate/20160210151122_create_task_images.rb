@@ -3,7 +3,7 @@ class CreateTaskImages < ActiveRecord::Migration
     create_table :task_images do |t|
       t.integer :task_id
       t.text :description
-      t.string :file_name
+      t.string :name
       t.timestamps null: false
     end
   end

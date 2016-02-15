@@ -5,18 +5,5 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
-unless Company.nil?
-  10.times do |n|
-    company = ('A'..'Z').to_a.shuffle[0,8].join
-    name = 'Test'
-    surname = "Dummy-#{n}"
-    email = "test#{n}@example.org"
-    password = 'password'
-    Company.create!(name: company).create_user!(
-      name: name,
-      surname: surname,
-      email: email,
-      password: password)
-    Role.user=User.where(:user_id, n)
-  end
-end
+
+AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password')

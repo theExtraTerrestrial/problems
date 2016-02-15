@@ -48,3 +48,4 @@ end
 gem 'cancan'
 gem 'activeadmin', github: 'activeadmin'
 gem 'paperclip'
+gem 'devise'
