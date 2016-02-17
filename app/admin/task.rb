@@ -2,39 +2,56 @@ ActiveAdmin.register Task do
   ActiveAdmin.register TaskImage do
     belongs_to :task
     form do |f|
-      f.inputs 'Image information' do |i|
-        i.input :name
+      f.inputs 'Attēlu pielikums' do |i|
+        # i.input :name, label:''
         i.input :image, :as => :file
-        i.input :description
+        i.input 'Aprkasts', :description
       end
-      f.submit
+      f.actions
     end
   end
 
-  permit_params :name, :description, :deadline, :category_id, :user_id, :creator_id, :responsible_id,
+  permit_params :name, :description, :deadline, :category_id, :creator_id, :responsible_id,
   task_images_attributes: [:name, :description, :image_file_name, :_destroy]
 
+  before_build do |record|
+    record.creator_id = current_admin_user.id
+  end
 
   controller do
+    #load_and_authorize_resource
+
     def new
       @task = Task.new
       @task.task_images.build
-      @task.creator_id = current_user
     end
   end
+
   form do |f|
-    f.inputs 'Basic Details' do
-      f.input :name
-      f.input :description
-      f.input :deadline
-      f.input :category
+    f.inputs 'Pamatinformācija' do
+      f.input :name, label: 'Temats'
+      f.input :category, label: 'Kategorija'
+      f.input :description, label: 'Aprkasts'
+      f.input :deadline, label: 'Aptuvenais izpildes termiņš'
+      f.input :responsible_id, :as => :select, :collection => AdminUser.all.map{|u| ["#{u.last_name}, #{u.first_name}", u.id]}, label: 'Atbildīgais administrators'
     end
 
-    f.inputs :name => 'Image information', :for => :task_image do |t|
-      t.input :name
-      t.input :image, :as => :file
-      t.input :description
+    f.inputs :name => 'Attēlu pielikums', :for => :task_image do |t|
+      # t.input :name, label:''
+      t.input :image, :as => :file, label: 'Fails'
+      t.input :description, label: 'Aprkasts'
     end
     f.actions
   end
+
+  index do 
+    column 'Issue topic', :name
+    column :description
+    column 'Category' do |t| Category.find(t.category_id).name end
+    column 'Responsible user', :responsible_id
+    column 'Images'
+    column 'State'
+    actions
+  end
+
 end
