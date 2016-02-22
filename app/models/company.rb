@@ -1,3 +1,3 @@
 class Company < ActiveRecord::Base
-  has_one :user
+	has_many :admin_users
 end

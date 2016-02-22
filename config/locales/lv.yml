@@ -1,0 +1,6 @@
+lv:
+  active_admin:
+    new_model: "Jauns %{model}"
+    create_model: "Izveidot %{model}"
+    edit_model: "Rediģēt %{model}"
+    update_model: "Labot %{model}"    
