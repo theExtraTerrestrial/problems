@@ -5,4 +5,9 @@ class AdminUser < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
   belongs_to :company
   belongs_to :role
+  has_many :tasks
+
+  def full_name
+  	"#{first_name} #{last_name}"
+  end
 end

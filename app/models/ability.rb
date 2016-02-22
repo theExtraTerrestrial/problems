@@ -5,17 +5,16 @@ class Ability
 
     user ||= AdminUser.new
 
-    if user.role? :admin
+    if user.role.name.downcase == 'admin'
         can :manage, :all
-    elsif user.role? :darbinieks
-        can :create, AdminComment
-        can :update, AdminComment do |comment|
-            comment.try(:user) == user
-        end
+    elsif user.role.name.downcase == 'darbinieks'
+        can :read, :all
+        can :manage, ActiveAdmin::Comment, :id => user.id
         can :create, Task
-        can :update, Task do |task|
-            task.try(:user) == user
-        end
+        can [:update, :destroy], Task, :id => user.id
+    else 
+        can :read, :all
+        cannot [:create, :update, :destroy], :all
     end
     # Define abilities for the passed in user here. For example:
     #

@@ -19,8 +19,7 @@ ActiveAdmin.register Task do
   end
 
   controller do
-    #load_and_authorize_resource
-
+  # load_and_authorize_resource
     def new
       @task = Task.new
       @task.task_images.build
@@ -45,13 +44,33 @@ ActiveAdmin.register Task do
   end
 
   index do 
-    column 'Issue topic', :name
-    column :description
-    column 'Category' do |t| Category.find(t.category_id).name end
-    column 'Responsible user', :responsible_id
-    column 'Images'
-    column 'State'
+    column 'Temats', :name
+    column 'Aprkasts', :description
+    column 'Kategorija' do |t| Category.find(t.category_id).name end
+    column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name end
+    column 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
+    column 'Attēli', :image_file_name do |t| t.task_images.map(&:image).each do |i|
+        image_tag i.url(:thumb)
+      end
+    end
+    column 'Stavoklis'
     actions
+  end
+
+  show do
+    attributes_table do
+      row 'Temats', :name
+      row 'Aprkasts', :description
+      row 'Kategorija' do |t| Category.find(t.category_id).name end
+      row 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name end
+      row 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
+      row 'Attēli' do |t| t.task_images.map(&:image).each do |i|
+          image_tag i.url(:thumb)
+        end
+      end
+      row 'Stavoklis'
+    end
+    active_admin_comments
   end
 
 end
