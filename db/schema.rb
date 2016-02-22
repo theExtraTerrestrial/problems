@@ -87,6 +87,7 @@ ActiveRecord::Schema.define(version: 20160215141416) do
     t.datetime "deadline"
     t.integer  "responsible_id", limit: 4
     t.integer  "category_id",    limit: 4
+    t.integer  "admin_user_id",  limit: 4
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
   end

@@ -7,6 +7,7 @@ class CreateTasks < ActiveRecord::Migration
       t.datetime :deadline
       t.integer :responsible_id
       t.integer :category_id
+      t.integer :admin_user_id
 
       t.timestamps null: false
     end
