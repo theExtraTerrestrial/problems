@@ -10,6 +10,8 @@ ActiveAdmin.register Task do
       f.actions
     end
   end
+  
+  menu label: 'Pieteikumi'
 
   permit_params :name, :description, :deadline, :category_id, :creator_id, :responsible_id,
   task_images_attributes: [:name, :description, :image_file_name, :_destroy]
@@ -30,9 +32,12 @@ ActiveAdmin.register Task do
     f.inputs 'Pamatinformācija' do
       f.input :name, label: 'Temats'
       f.input :category, label: 'Kategorija'
+      # f.input :admin_priority, as: :select, collection: Task::PRIORITY, include_blank: false
       f.input :description, label: 'Aprkasts'
       f.input :deadline, label: 'Aptuvenais izpildes termiņš'
-      f.input :responsible_id, :as => :select, :collection => AdminUser.all.map{|u| ["#{u.last_name}, #{u.first_name}", u.id]}, label: 'Atbildīgais administrators'
+      if can? :create, AdminUser
+        f.input :responsible_id, :as => :select, :collection => AdminUser.all.map{|u| ["#{u.last_name}, #{u.first_name}", u.id]}, label: 'Atbildīgais administrators'
+      end
     end
 
     f.inputs :name => 'Attēlu pielikums', :for => :task_image do |t|
@@ -46,8 +51,9 @@ ActiveAdmin.register Task do
   index do 
     column 'Temats', :name
     column 'Aprkasts', :description
+    # column 'Admin prioritāte' do |t| Task::PRIORITY.key(t.category_id).name end
     column 'Kategorija' do |t| Category.find(t.category_id).name end
-    column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name end
+    column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
     column 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
     column 'Attēli', :image_file_name do |t| t.task_images.map(&:image).each do |i|
         image_tag i.url(:thumb)
@@ -62,10 +68,10 @@ ActiveAdmin.register Task do
       row 'Temats', :name
       row 'Aprkasts', :description
       row 'Kategorija' do |t| Category.find(t.category_id).name end
-      row 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name end
+      row 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
       row 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
-      row 'Attēli' do |t| t.task_images.map(&:image).each do |i|
-          image_tag i.url(:thumb)
+      row 'Attēli' do |t| t.task_images.map(&:image).each do |image|
+          image_tag image.url(:thumb)
         end
       end
       row 'Stavoklis'
