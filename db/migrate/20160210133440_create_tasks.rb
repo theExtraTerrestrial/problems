@@ -8,6 +8,10 @@ class CreateTasks < ActiveRecord::Migration
       t.integer :responsible_id
       t.integer :category_id
       t.integer :admin_user_id
+      t.integer :user_priority
+      t.integer :admin_priority
+      t.boolean :closed_by_admin
+      t.boolean :closed_by_employee
 
       t.timestamps null: false
     end

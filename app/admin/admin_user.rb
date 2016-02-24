@@ -1,4 +1,8 @@
 ActiveAdmin.register AdminUser do
+  
+  menu label: 'Lietotāji'
+  menu :if => proc{ can?(:manage, AdminUser ) }
+
   permit_params :email, :password, :password_confirmation, :role_id, :company_id, :first_name, :last_name
 
   index do
@@ -14,7 +18,7 @@ ActiveAdmin.register AdminUser do
 
   filter :email
   filter :created_at
-  filter :role_id, as: :select, collection: Role.all.map{|u| ["#{u.name}", u.id]}
+  filter :role_id, as: :select, collection: proc {Role.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'roles'
 
   form do |f|
     f.inputs "Admin Details" do
@@ -27,6 +31,18 @@ ActiveAdmin.register AdminUser do
       f.input :company_id, as: :select, collection: Company.all.map{|u| ["#{u.name}", u.id]}
     end
     f.actions
+  end
+
+  controller do
+
+    
+
+      private
+
+        def user_params
+          params.require(:user).permit(:email, :password, :password_confirmation, :role_id, :company_id, :first_name, :last_name)
+        end 
+
   end
 
 end
