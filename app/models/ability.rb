@@ -12,6 +12,7 @@ class Ability
         can :read, :all
         can :manage, ActiveAdmin::Comment, :id => user.id
         can :manage, Task, :creator_id => user.id
+        can :manage, TaskImage
         cannot [:create, :destroy], AdminUser
     else 
         cannot :manage, :all
