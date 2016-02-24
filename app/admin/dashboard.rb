@@ -17,7 +17,7 @@ ActiveAdmin.register_page "Dashboard" do
         column do
           panel "Jaunākie pieteikumi" do
             ul do
-              Task.recent(5).map do |task|
+              Task.recent(10).map do |task|
                 li link_to(task.name, admin_task_path(task))
               end
             end
@@ -31,6 +31,7 @@ ActiveAdmin.register_page "Dashboard" do
                 li link_to(task.name, admin_task_path(task))
               end
             end
+            a link_to('Izveidot pieteikumu', new_admin_task_path)
           end
         end
       else

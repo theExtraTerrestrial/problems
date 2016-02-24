@@ -33,16 +33,15 @@ ActiveAdmin.register Task do
             label: 'Atbildīgais administrators'
           f.input :admin_priority, as: :select, collection: Task::PRIORITY, include_blank: false
         end
+
       end
     end
 
     f.panel 'Attēlu pielikums' do
       f.has_many :task_images, heading: false do |i|
-        f.inputs do
-          # i.input :name, label:''
-         f.input :image_file_name, :as => :file, label: 'Fails'
-         f.input :description, label: 'Aprkasts'
-        end
+        # i.input :name, label:''
+        i.input :image, :as => :file, label: 'Fails'
+        i.input :description, label: 'Aprkasts'
       end
     end
     f.actions
@@ -51,14 +50,11 @@ ActiveAdmin.register Task do
   index do 
     column 'Temats', :name
     column 'Aprkasts', :description
-    column 'Admin prioritāte' do |t| Task::PRIORITY.key(t.category_id) end
+    column :admin_priority do |t| Task::PRIORITY.key(t.admin_priority) end
+    column :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
     column 'Kategorija' do |t| Category.find(t.category_id).name end
     column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
     column 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
-    column 'Attēli', :image_file_name do |t| t.task_images.map(&:image).each do |i|
-        image_tag i.url(:thumb)
-      end
-    end
     column 'Stavoklis'
     actions
   end
@@ -70,12 +66,29 @@ ActiveAdmin.register Task do
       row 'Kategorija' do |t| Category.find(t.category_id).name end
       row 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
       row 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
-      row 'Attēli' do |t| t.task_images.map(&:image).each do |image|
-          image_tag image.url(:thumb)
+      # row 'Attēli' do |t| 
+      #     # image_tag image.url(:thumb).html_safe
+          
+          
+      #   # end
+      #   arr = ""
+      #   t.task_images.each do |a|
+      #     arr += "<img src='#{a.image.url}' /> "
+      #   end  
+      #   arr.html_safe
+
+      # end
+      row 'Stavoklis' do |s| Task::STATUS.key(t.category_id) end
+    end
+
+    panel(I18n.t("documents.incoming.attachments.title"), :class => "new_event_panel seventy_percnt_panel panel") do
+        table_for(task.task_images) do
+          column I18n.t("documents.incoming.attachments.name"), :name
+          column I18n.t("documents.incoming.attachments.file") do |attachment| image_tag attachment.image.url(:thumb).html_safe end
+          column I18n.t("documents.incoming.attachments.created_at"), :created_at
         end
       end
-      row 'Stavoklis'
-    end
+
     active_admin_comments
   end
 
