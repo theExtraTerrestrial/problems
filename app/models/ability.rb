@@ -4,17 +4,17 @@ class Ability
   def initialize(user)
 
     user ||= AdminUser.new
+    can :read, ActiveAdmin::Page, :page => 'Dashboard'
 
     if user.role.name.downcase == 'admin'
         can :manage, :all
     elsif user.role.name.downcase == 'darbinieks'
         can :read, :all
         can :manage, ActiveAdmin::Comment, :id => user.id
-        can :create, Task
-        can [:update, :destroy], Task, :id => user.id
+        can :manage, Task, :creator_id => user.id
+        cannot [:create, :destroy], AdminUser
     else 
-        can :read, :all
-        cannot [:create, :update, :destroy], :all
+        cannot :manage, :all
     end
     # Define abilities for the passed in user here. For example:
     #
