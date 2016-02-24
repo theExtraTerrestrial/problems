@@ -5,6 +5,7 @@ class Task < ActiveRecord::Base
   accepts_nested_attributes_for :task_images, allow_destroy: true
   validates :category_id, presence: true
   validates :name, presence: true
+  validates :deadline, :presence => true
 
 
   scope :recent, ->(num) {order(created_at: :desc).limit(num)}
