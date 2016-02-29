@@ -4,7 +4,9 @@ class CreateTasks < ActiveRecord::Migration
       t.string :name
       t.text :description
       t.integer :creator_id
-      t.datetime :deadline
+      t.datetime :admin_deadline
+      t.datetime :employee_deadline
+      t.integer :state
       t.integer :responsible_id
       t.integer :category_id
       t.integer :admin_user_id

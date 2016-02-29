@@ -21,7 +21,7 @@ ActiveAdmin.register AdminUser do
   filter :role_id, as: :select, collection: proc {Role.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'roles'
 
   form do |f|
-    f.inputs "Admin Details" do
+    f.inputs "Lietotāja pamatinformācija" do
       f.input :email
       f.input :password
       f.input :password_confirmation
@@ -33,9 +33,17 @@ ActiveAdmin.register AdminUser do
     f.actions
   end
 
-  controller do
+  show do |s|
+    attributes_table do
+      row 'Vārds' do |r| r.first_name end
+      row 'Uzvārds' do |r| r.last_name end
+      row 'Loma' do |r| Role.find(r.role_id).name end
+    end
+    panel 'Pašreizējie pieteikumi' do
+    end
+  end
 
-    
+  controller do
 
       private
 

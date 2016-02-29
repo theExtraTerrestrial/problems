@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160215141416) do
+ActiveRecord::Schema.define(version: 20160229132008) do
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace",     limit: 255
@@ -80,11 +80,21 @@ ActiveRecord::Schema.define(version: 20160215141416) do
     t.datetime "image_updated_at"
   end
 
+  create_table "task_logs", force: :cascade do |t|
+    t.decimal  "time",                      precision: 10
+    t.text     "description", limit: 65535
+    t.integer  "task_id",     limit: 4
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.string   "name",               limit: 255
     t.text     "description",        limit: 65535
     t.integer  "creator_id",         limit: 4
-    t.datetime "deadline"
+    t.datetime "admin_deadline"
+    t.datetime "employee_deadline"
+    t.integer  "state",              limit: 4
     t.integer  "responsible_id",     limit: 4
     t.integer  "category_id",        limit: 4
     t.integer  "admin_user_id",      limit: 4

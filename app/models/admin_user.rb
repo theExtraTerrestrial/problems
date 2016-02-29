@@ -7,6 +7,8 @@ class AdminUser < ActiveRecord::Base
   belongs_to :role
   has_many :tasks
 
+  scope :admins, -> { where(role_id: 1) }
+
   def full_name
   	"#{first_name} #{last_name}"
   end

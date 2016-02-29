@@ -23,6 +23,13 @@ ActiveAdmin.register_page "Dashboard" do
             end
           end
         end
+        panel "Nepabeigtie pieteikumi" do
+            ul do
+              Task.where.not(state: [3,4]).map do |task|
+                li link_to(task.name, admin_task_path(task))
+              end
+            end
+          end
       elsif current_admin_user.role.name.downcase == 'darbinieks'
         column do
           panel "Tavi pieteikumi" do
@@ -42,14 +49,5 @@ ActiveAdmin.register_page "Dashboard" do
         end
       end
     end
-  end
-
-  controller do
-
-    def index
-      super
-      @tasks = Task.all
-    end
-
   end
 end
