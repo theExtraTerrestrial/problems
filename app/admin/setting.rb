@@ -1,6 +1,6 @@
 #encoding: utf-8
 ActiveAdmin.register Setting do
-  menu :label => "Uzstādījumi" 
+  menu :parent => "Administrācija", :label => "Uzstādījumi" 
 
 
   filter :name, :label => "Nosaukums"

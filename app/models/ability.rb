@@ -10,12 +10,20 @@ class Ability
         can :manage, :all
     elsif user.role.name.downcase == 'darbinieks'
         can :read, :all
-        cannot :manage, ActiveAdmin::Comment
-        can :manage, ActiveAdmin::Comment, author_id: user.id
+
+        can :create, ActiveAdmin::Comment
+        can [:read, :edit, :destroy], ActiveAdmin::Comment, author_id: user.id
+
+        can :create, Task
+        cannot :read, Task
         can :manage, Task, creator_id: user.id
-        can :manage, TaskImage
+
+        can [:create, :destroy], TaskImage
+        cannot :read, TaskImage
+
         can [:read, :update], AdminUser, id: user.id
         cannot [:create, :destroy], AdminUser
+        
         cannot :manage, Category
         cannot :manage, Company
         cannot :manage, Setting

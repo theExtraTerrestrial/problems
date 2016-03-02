@@ -16,7 +16,7 @@ class Emailer < ActionMailer::Base
     # raise @object.inspect
     mail(
       :to => Setting.uncached_value_for('main_admin_email'),
-      :from => "99 Problems <noreply@99problems.lv>",
+      :from => "Trejdevini Saieti <noreplay@saietstrejdevini.lv>",
       :subject => "Jauns pieteikums"
     )
   end  

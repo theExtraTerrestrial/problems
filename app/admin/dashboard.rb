@@ -1,6 +1,6 @@
 ActiveAdmin.register_page "Dashboard" do
 
-  menu priority: 1, label: 'Administrācijas panelis'
+  menu priority: 1, label: 'Galvenais panelis'
 
   content title: proc {current_admin_user.role.name} do
     columns do
@@ -34,7 +34,7 @@ ActiveAdmin.register_page "Dashboard" do
         column do
           panel "Tavi pieteikumi" do
             ul do
-              Task.where('creator_id', current_admin_user.id).map do |task|
+              Task.where('creator_id', current_admin_user.id).each do |task|
                 li link_to(task.name, admin_task_path(task))
               end
             end

@@ -4,11 +4,12 @@ ActiveAdmin.register AdminUser do
 
   permit_params :email, :password, :password_confirmation, :role_id, :company_id, :first_name, :last_name
 
-  index do
+  index title: 'Lietotāji' do
     selectable_column
     id_column
     column :email
     column :role_id do |c| Role.find(c.role_id).name end
+    column :company_id do |c| Company.find(c.company_id).name rescue "-" end
     column :current_sign_in_at
     column :sign_in_count
     column :created_at
@@ -18,6 +19,7 @@ ActiveAdmin.register AdminUser do
   filter :email
   filter :created_at
   filter :role_id, as: :select, collection: proc {Role.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'roles'
+  filter :company_id, as: :select, collection: proc {Company.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'companies'
 
   form do |f|
     f.inputs "Lietotāja pamatinformācija" do
@@ -34,11 +36,13 @@ ActiveAdmin.register AdminUser do
     f.actions
   end
 
-  show do |s|
-    attributes_table do
-      row 'Vārds' do |r| r.first_name end
-      row 'Uzvārds' do |r| r.last_name end
-      row 'Loma' do |r| Role.find(r.role_id).name end
+  show title: proc{current_admin_user.full_name} do |s|
+    panel 'Lietotāja pamatinformācija' do
+      attributes_table_for s do
+        row 'Vārds' do |r| r.first_name end
+        row 'Uzvārds' do |r| r.last_name end
+        row 'Loma' do |r| Role.find(r.role_id).name end
+      end
     end
     panel 'Pašreizējie pieteikumi' do
       table_for Task.where('creator_id or responsible_id', current_admin_user.id) do

@@ -1,4 +1,7 @@
 Jauns pieteikums
 
+<%= "Vārds, Uzvārds: " %> <%= " #{AdminUser.find(@object.creator_id).full_name}" %>
+<%= "E-pasta adrese: " %> <%= " #{@object.email}" %>
 <%= "Temats: " %> <%= " #{@object.name}" %>
 <%= "Apraksts: " %> <%= " #{@object.description}" %>
+<%= "Darbinieka prioritāte: " %> <%= " #{@object.user_priority}" %>
