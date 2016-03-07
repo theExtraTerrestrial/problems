@@ -14,7 +14,6 @@ class Task < ActiveRecord::Base
 
   PRIORITY = {"zema" => 1, "vidēja" => 2, "augsta" => 3, "ļoti augsta" => 4}
   STATUS = {"pievienots" => 1, "procesā" => 2, "atcelts" => 3, "pabeigts" => 4}
-  STATUS_COLORS = { gray: 1, blue: 2, red: 3, green: 4}
 
   def notify_admin
     Emailer.notification(self).deliver

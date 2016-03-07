@@ -8,6 +8,7 @@
 
 $(document).ready(function(){
 
-  jQuery(".best_in_place").best_in_place()
+  jQuery(".best_in_place").best_in_place();
+  $('.state_button').bind("ajax:success", function(){$(this).closest('tr').effect('highlight');});
   
 })

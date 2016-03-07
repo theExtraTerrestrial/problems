@@ -10,6 +10,10 @@ ActiveAdmin.register Task do
         flash[:success] = 'Pielikums veiksmīgi dzēsts'
         redirect_to admin_task_path(@task)
       end
+
+      def cancel
+        raise params.inspect
+      end
     end
   end
   
@@ -23,6 +27,28 @@ ActiveAdmin.register Task do
   before_build do |record|
     record.creator_id = current_admin_user.id
     record.state = 1
+  end
+
+  member_action :close, method: :put do
+    if record.closed_by_admin || record.closed_by_employee
+      if can? :manage, AdminUser
+        resource.update_attribute('closed_by_admin', true)
+        resource.update_attribute('state', 3)
+      else
+        resource.update_attribute('closed_by_employee', true)
+        resource.update_attribute('state', 3)
+      end
+      redirect_to admin_tasks_path, notice: "Pieteikums ir atcelts"
+    else
+      if can? :manage, AdminUser
+        resource.update_attribute('closed_by_admin', false)
+        resource.update_attribute('state', 1)
+      else
+        resource.update_attribute('closed_by_employee', false)
+        resource.update_attribute('state', 1)
+      end
+      redirect_to admin_tasks_path, notice: "Pieteikuma atcelšana ir atsaukta"
+    end
   end
 
   form do |f|
@@ -75,7 +101,8 @@ ActiveAdmin.register Task do
       column 'Admina prioritāte', :admin_priority do |t| Task::PRIORITY.key(t.admin_priority) end
       column 'Darbinieka prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
       column 'Stavoklis' do |t|
-        best_in_place t, :state , as: :select, url: [:admin, t], collection: Task::STATUS.keys, value: Task::STATUS.key(t.state), class: 'state_button best_in_place'
+        best_in_place t, :state , as: :select, url: [:admin, t], collection: Task::STATUS.keys,
+        value: Task::STATUS.key(t.state), class: "state_button best_in_place #{Task::STATUS.key(t.state)}"
       end
     else
       column 'Prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
@@ -99,22 +126,28 @@ ActiveAdmin.register Task do
           column 'Admina prioritāte', :admin_priority do |t| Task::PRIORITY.key(t.admin_priority) end
           column 'Darbinieka prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
           column 'Stavoklis' do |t|
-            best_in_place t, :state , as: :select, url: [:admin, t], collection: Task::STATUS.keys, value: Task::STATUS.key(t.state), class: 'state_button best_in_place'
+            best_in_place t, :state , as: :select, url: [:admin, t], collection: Task::STATUS.keys,
+            value: Task::STATUS.key(t.state), class: "state_button best_in_place #{Task::STATUS.key(t.state)}"
+          end
+          column '' do |t| 
+            if t.closed_by_employee || t.closed_by_admin
+              link_to 'Atsaukt atcelšanu', {controller: 'tasks', action: 'close', method: :put}
+            else
+              link_to 'Atcelt pieteikumu', {controller: 'tasks', action: 'close', method: :put}
+            end
           end
         else
           column 'Termiņš' do |t| t.employee_deadline end
           column 'Prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
           column 'Stavoklis' do |t| Task::STATUS.key(t.state) end
+          column '' do |t| 
+            if t.closed_by_employee || t.closed_by_admin
+              link_to 'Atsaukt atcelšanu', {controller: 'task', action: 'close', method: :put}
+            else
+              link_to 'Atcelt pieteikumu', {controller: 'task', action: 'close', method: :put}
+            end
+          end
         end
-        # row 'Attēli' do |t| 
-        #     # image_tag image.url(:thumb).html_safe
-        #   # end
-        #   arr = ""
-        #   t.task_images.each do |a|
-        #     arr += "<img src='#{a.image.url}' /> "
-        #   end  
-        #   arr.html_safe
-        # end
       end
     end
 
@@ -128,6 +161,13 @@ ActiveAdmin.register Task do
         end
     end
 
+    panel 'Patērētais laiks' do
+      table_for task.task_logs do
+        column 'Laiks', :time
+        column 'Piebilde', :description
+        column '' do |t| link_to '' end
+      end
+    end
     active_admin_comments
   end
 

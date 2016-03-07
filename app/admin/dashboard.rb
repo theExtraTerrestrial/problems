@@ -9,7 +9,7 @@ ActiveAdmin.register_page "Dashboard" do
           panel "Tev uzticētie pieteikumi" do
             ul do
               Task.where('responsible_id', current_admin_user.id).map do |task|
-                li link_to(task.name, admin_task_path(task))
+                li link_to(task.name+" (#{Task::STATUS.key(task.state)})", admin_task_path(task))
               end
             end
           end
@@ -18,15 +18,15 @@ ActiveAdmin.register_page "Dashboard" do
           panel "Jaunākie pieteikumi" do
             ul do
               Task.recent(10).map do |task|
-                li link_to(task.name, admin_task_path(task))
+                li link_to(task.name+" (#{Task::STATUS.key(task.state)})", admin_task_path(task))
               end
             end
           end
         end
         panel "Nepabeigtie pieteikumi" do
             ul do
-              Task.where('state', 1..2).map do |task|
-                li link_to(task.name, admin_task_path(task))
+              Task.where(state: 1..2).map do |task|
+                li link_to(task.name+" (#{Task::STATUS.key(task.state)})", admin_task_path(task))
               end
             end
           end
@@ -35,7 +35,7 @@ ActiveAdmin.register_page "Dashboard" do
           panel "Tavi pieteikumi" do
             ul do
               Task.where('creator_id', current_admin_user.id).each do |task|
-                li link_to(task.name, admin_task_path(task))
+                li link_to(task.name+" (#{Task::STATUS.key(task.state)})", admin_task_path(task))
               end
             end
             a link_to('Izveidot pieteikumu', new_admin_task_path)
