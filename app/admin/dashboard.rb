@@ -25,7 +25,7 @@ ActiveAdmin.register_page "Dashboard" do
         end
         panel "Nepabeigtie pieteikumi" do
             ul do
-              Task.where.not(state: [3,4]).map do |task|
+              Task.where('state', 1..2).map do |task|
                 li link_to(task.name, admin_task_path(task))
               end
             end
