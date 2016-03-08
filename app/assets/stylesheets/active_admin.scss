@@ -17,9 +17,7 @@
 //
 //   .status_tag { background: #6090DB; }
 .state_button {
-	font-weight: bold;
-	color: white;
-	padding: 2px;
+	@extend .status_tag
 };
 
 .atcelts {

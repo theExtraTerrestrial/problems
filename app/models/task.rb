@@ -18,5 +18,4 @@ class Task < ActiveRecord::Base
   def notify_admin
     Emailer.notification(self).deliver
   end
-
 end

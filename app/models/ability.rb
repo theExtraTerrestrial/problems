@@ -21,6 +21,8 @@ class Ability
         can [:create, :destroy], TaskImage
         cannot :read, TaskImage
 
+        cannot :manage, TaskLog
+
         can [:read, :update], AdminUser, id: user.id
         cannot [:create, :destroy], AdminUser
         
