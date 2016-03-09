@@ -25,6 +25,7 @@ class Setting < ActiveRecord::Base
   def Setting.all_settings
     [
       ["main_admin_email", "Galvenais admina epasts", "example@example.org"],
+      
     ]
   end
   

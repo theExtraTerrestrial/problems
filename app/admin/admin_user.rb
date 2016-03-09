@@ -2,24 +2,33 @@ ActiveAdmin.register AdminUser do
   
   menu :if => proc{ can?(:manage, AdminUser ) }, label: 'Lietotāji'
 
-  permit_params :email, :password, :password_confirmation, :role_id, :company_id, :first_name, :last_name
+  permit_params :email, :password, :password_confirmation, :role_id, :company_id, :first_name, :last_name, :admin_user
+
+  controller do
+    def update
+      if params[:admin_user][:password].blank?
+        params[:admin_user].delete("password")
+        params[:admin_user].delete("password_confirmation")
+      end
+      super
+    end
+  end
 
   index title: 'Lietotāji' do
     selectable_column
-    id_column
-    column :email
-    column :role_id do |c| Role.find(c.role_id).name end
-    column :company_id do |c| Company.find(c.company_id).name rescue "-" end
-    column :current_sign_in_at
-    column :sign_in_count
-    column :created_at
+    column 'E-pasts', :email
+    column 'Loma', :role_id do |c| Role.find(c.role_id).name end
+    column 'Uzņēmums', :company_id do |c| Company.find(c.company_id).name rescue "-" end
+    column 'Pēdējo reizi ierakstījies', :current_sign_in_at
+    column 'Ierakstīšanās reizes', :sign_in_count
+    column 'Izveidots', :created_at
     actions
   end
 
-  filter :email
-  filter :created_at
-  filter :role_id, as: :select, collection: proc {Role.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'roles'
-  filter :company_id, as: :select, collection: proc {Company.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'companies'
+  filter :email, label: 'E-pasts'
+  filter :created_at, label: 'Izveidots no-līdz'
+  filter :role_id, as: :select, label: 'Loma', collection: proc {Role.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'roles'
+  filter :company_id, as: :select, label: 'Uzņēmums', collection: proc {Company.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'companies'
 
   form do |f|
     f.inputs "Lietotāja pamatinformācija" do
@@ -45,7 +54,7 @@ ActiveAdmin.register AdminUser do
       end
     end
     panel 'Pašreizējie pieteikumi' do
-      table_for Task.where('creator_id or responsible_id', current_admin_user.id) do
+      table_for Task.where('creator_id = ? OR responsible_id = ?', current_admin_user.id, current_admin_user.id) do
         column 'Temats', :name
         column 'Aprkasts', :description
         column 'Admina prioritāte', :admin_priority do |t| Task::PRIORITY.key(t.admin_priority) end

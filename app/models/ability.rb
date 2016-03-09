@@ -8,6 +8,7 @@ class Ability
 
     if user.role.name.downcase == 'admin'
         can :manage, :all
+        cannot :destroy, AdminUser, id: user.id
     elsif user.role.name.downcase == 'darbinieks'
         can :read, :all
 
