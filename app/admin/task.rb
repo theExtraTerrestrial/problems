@@ -124,15 +124,18 @@ ActiveAdmin.register Task do
     column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
     column 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
     if can? :manage, AdminUser 
-      column 'Admina prioritāte', :admin_priority do |t| Task::PRIORITY.key(t.admin_priority) end
-      column 'Darbinieka prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
+      column 'Admina prioritāte', :admin_priority do |t| best_in_place t, :admin_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
+        value: Task::PRIORITY.key(t.admin_priority), class: "best_in_place" end
+      column 'Darbinieka prioritāte', :user_priority do |t| best_in_place t, :user_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
+        value: Task::PRIORITY.key(t.user_priority), class: "best_in_place" end
       column 'Stavoklis' do |t|
         best_in_place t, :state , as: :select, url: [:admin, t], collection: Task::STATUS.keys,
         value: Task::STATUS.key(t.state), class: "state_button best_in_place #{Task::STATUS.key(t.state)}"
       end
     else
       column 'Prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
-      column 'Stavoklis' do |t| Task::STATUS.key(t.state) end
+      column 'Stavoklis' do |t| best_in_place t, :user_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
+        value: Task::PRIORITY.key(t.user_priority), class: "best_in_place" end
     end
     actions
   end
@@ -186,7 +189,7 @@ ActiveAdmin.register Task do
     panel 'Pieteikuma attēli' do
         table_for task.task_images do
           column 'Piebilde', :description
-          column 'Attēls' do |attachment| image_tag attachment.image.url(:thumb).html_safe end
+          column 'Attēls' do |attachment| link_to (image_tag attachment.image.url(:thumb)), attachment.image.url end
           column 'Izveidots', :created_at
           column '' do |attachment| link_to 'Noņemt pielikumu', admin_task_task_image_path(task, attachment),
             data: {:confirm => 'Esat pārliecināts?'}, :method => :delete end

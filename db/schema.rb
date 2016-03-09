@@ -89,11 +89,11 @@ ActiveRecord::Schema.define(version: 20160301133822) do
   end
 
   create_table "task_logs", force: :cascade do |t|
-    t.decimal  "time",                      precision: 10
+    t.decimal  "time",                      precision: 10, scale: 8
     t.text     "description", limit: 65535
     t.integer  "task_id",     limit: 4
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
   end
 
   create_table "tasks", force: :cascade do |t|
