@@ -18,6 +18,8 @@ ActiveAdmin.register Task do
   ActiveAdmin.register TaskLog do
     belongs_to :task
 
+    menu false
+
     permit_params :time, :description, :id
 
     controller do
@@ -37,7 +39,7 @@ ActiveAdmin.register Task do
   
   menu label: 'Pieteikumi'
 
-  permit_params :name, :description, :admin_deadline, :employee_deadline, :state,
+  permit_params :name, :description, :admin_deadline, :employee_deadline, :state, :company_id,
     :category_id, :creator_id, :responsible_id, :admin_priority, :user_priority, :admin_user_id,
     task_images_attributes: [:id, :name, :description, :image, :_destroy],
     task_logs_attributes: [:id, :time, :description, :task_id, :_destroy]
@@ -46,6 +48,8 @@ ActiveAdmin.register Task do
     record.admin_user_id = current_admin_user.id
     record.creator_id = current_admin_user.id
     record.state = 1
+    record.company_id = current_admin_user.company_id
+    record.is_admin = current_admin_user.can? :manage, AdminUser
   end
 
   member_action :close, method: :get do 
@@ -89,6 +93,8 @@ ActiveAdmin.register Task do
         f.input :category, label: 'Kategorija', include_blank: false
         f.input :description, label: 'Aprkasts'
         if can? :manage, AdminUser
+          f.input :company_id, as: :select, collection: Company.all.map{|u| ["#{u.name}", u.id]},
+            label: 'Uzņēmums' if ActiveRecord::Base.connection.table_exists? 'companies'
           f.input :user_priority, as: :select, collection: Task::PRIORITY,
             include_blank: false, label: 'Darbinieka prioritāte'
           f.input :admin_priority, as: :select, collection: Task::PRIORITY,
@@ -100,7 +106,7 @@ ActiveAdmin.register Task do
         else
           f.input :user_priority, as: :select, collection: Task::PRIORITY,
             include_blank: false, label: 'Prioritāte'
-          f.input :employee_deadline, as: :date_time_picker, label: 'Izpildes termiņš'
+          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {min_date: '0'}, label: 'Izpildes termiņš'
         end
       end
     end
@@ -117,7 +123,7 @@ ActiveAdmin.register Task do
 
   index do 
     selectable_column
-    column 'Uzņēmums' do |t| t.admin_user.company.name rescue "-" end
+    column 'Uzņēmums' do |t| Company.find(t.company_id).name rescue "-" end
     column 'Temats', :name do |t| link_to t.name, admin_task_path(t) end
     column 'Aprkasts', :description do |t| truncate(t.description, length: 30) end
     column 'Kategorija' do |t| Category.find(t.category_id).name end
@@ -142,58 +148,62 @@ ActiveAdmin.register Task do
 
 
   show do
-    panel 'Pieteikuma informācija' do
-      table_for task do
-        column 'Temats', :name
-        column 'Aprkasts', :description
-        column 'Kategorija' do |t| Category.find(t.category_id).name end
-        column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
-        column 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
-
-        if can? :manage, AdminUser
-          column 'Darbinieka termiņš', :employee_deadline do |t| t.employee_deadline.strftime('%d.%m.%Y %H:%M') rescue "-" end
-          column 'Admina termiņš', :admin_deadline do |t| t.admin_deadline.strftime('%d.%m.%Y %H:%M') rescue "-" end 
-          column 'Admina prioritāte', :admin_priority do |t| Task::PRIORITY.key(t.admin_priority) end
-          column 'Darbinieka prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
-          column 'Stavoklis', :state do |t|
-            best_in_place t, :state , as: :select, url: [:admin, t], collection: Task::STATUS.keys,
-            value: Task::STATUS.key(t.state), class: "state_button best_in_place #{Task::STATUS.key(t.state)}"
-          end
-          column 'Patērētais laiks(h)' do |t| 
-            best_in_place t.task_logs.last.nil? ? tl = t.task_logs.create!() : tl = t.task_logs.last, :time,
-              as: :input, url: [:admin, t,tl], class: "best_in_place" end
-          column '' do |t| link_to 'Pārskatīt pierakstītos laikus', admin_task_task_logs_path(t) end
-          column '' do |t| 
-            if t.closed_by_employee || t.closed_by_admin
-              link_to 'Atsaukt atcelšanu', close_admin_task_path(t)
+    columns do
+      column do
+        panel 'Pieteikuma informācija' do
+          attributes_table_for task do
+            row 'Temats', :name do |t| t.name end
+            row 'Kategorija' do |t| Category.find(t.category_id).name end
+            row 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
+            row 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
+    
+            if can? :manage, AdminUser
+              row 'Darbinieka termiņš', :employee_deadline do |t| t.employee_deadline.strftime('%d.%m.%Y %H:%M') rescue "-" end
+              row 'Admina termiņš', :admin_deadline do |t| t.admin_deadline.strftime('%d.%m.%Y %H:%M') rescue "-" end 
+              row 'Admina prioritāte', :admin_priority do |t| Task::PRIORITY.key(t.admin_priority) end
+              row 'Darbinieka prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
+              row 'Stavoklis', :state do |t|
+                best_in_place t, :state , as: :select, url: [:admin, t], collection: Task::STATUS.keys,
+                value: Task::STATUS.key(t.state), class: "state_button best_in_place #{Task::STATUS.key(t.state)}"
+              end
+              row 'Patērētais laiks(h)' do |t| 
+                best_in_place t.task_logs.last.nil? ? tl = t.task_logs.create!() : tl = t.task_logs.last, :time,
+                  as: :input, url: [:admin, t,tl], class: "best_in_place", place_holder: "------" end
+              # column '' do |t| link_to 'Pārskatīt pierakstītos laikus', admin_task_task_logs_path(t) end    
             else
-              link_to 'Atcelt pieteikumu', close_admin_task_path(t)
+              row 'Termiņš' do |t| t.employee_deadline.strftime('%d.%m.%Y %H:%M') end
+              row 'Prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
+              row 'Stavoklis' do |t| Task::STATUS.key(t.state) end
             end
+            row 'Atcelt' do |t| 
+                if t.closed_by_employee || t.closed_by_admin
+                  link_to 'Atsaukt atcelšanu', close_admin_task_path(t)
+                else
+                  link_to 'Atcelt pieteikumu', close_admin_task_path(t)
+                end
+              end
           end
+        end
+      end
 
-        else
-          column 'Termiņš' do |t| t.employee_deadline.strftime('%d.%m.%Y %H:%M') end
-          column 'Prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
-          column 'Stavoklis' do |t| Task::STATUS.key(t.state) end
-          column '' do |t| 
-            if t.closed_by_employee || t.closed_by_admin
-              link_to 'Atsaukt atcelšanu', close_admin_task_path(t)
-            else
-              link_to 'Atcelt pieteikumu', close_admin_task_path(t)
-            end
+      column span: 3 do
+        panel 'Aprkasts' do
+          div class: 'text_display' do 
+            simple_format task.description
           end
         end
       end
     end
 
     panel 'Pieteikuma attēli' do
-        table_for task.task_images do
-          column 'Piebilde', :description
-          column 'Attēls' do |attachment| link_to (image_tag attachment.image.url(:thumb)), attachment.image.url end
-          column 'Izveidots', :created_at
-          column '' do |attachment| link_to 'Noņemt pielikumu', admin_task_task_image_path(task, attachment),
-            data: {:confirm => 'Esat pārliecināts?'}, :method => :delete end
-        end
+      table_for task.task_images do
+        column 'Attēls' do |attachment| link_to (image_tag attachment.image.url(:thumb)), attachment.image.url, target: '_blank' end
+        column 'Piebilde', :description
+        column 'Izveidots', :created_at
+        column '' do |attachment| link_to 'Noņemt pielikumu', admin_task_task_image_path(task, attachment),
+          data: {:confirm => 'Esat pārliecināts?'}, :method => :delete end
+      end
+      li link_to 'Pievienot attēlu', edit_admin_task_path(task)
     end
     active_admin_comments
   end

@@ -9,7 +9,7 @@ class Emailer < ActionMailer::Base
     }
 
   default_url_options[:host] = "#{DOMAIN_NAME}"
-  default :from => "99 Problems <noreply@99problems.lv>"
+  default :from => "Trejdevini Saieti <noreplay@saietstrejdevini.lv>"
 
   def notification(task)
     @object = task

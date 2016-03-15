@@ -110,6 +110,7 @@ ActiveRecord::Schema.define(version: 20160301133822) do
     t.integer  "admin_priority",     limit: 4
     t.boolean  "closed_by_admin"
     t.boolean  "closed_by_employee"
+    t.integer  "company_id",         limit: 4
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
   end

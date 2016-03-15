@@ -26,7 +26,7 @@ ActiveAdmin.register AdminUser do
   end
 
   filter :email, label: 'E-pasts'
-  filter :created_at, label: 'Izveidots no-līdz'
+  filter :created_at, as: :date_time_range, label: 'Izveidots periodā no-līdz'
   filter :role_id, as: :select, label: 'Loma', collection: proc {Role.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'roles'
   filter :company_id, as: :select, label: 'Uzņēmums', collection: proc {Company.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'companies'
 

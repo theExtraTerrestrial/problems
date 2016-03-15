@@ -20,6 +20,10 @@
 	@extend .status_tag
 };
 
+.best_in_place {
+	cursor: pointer;
+}
+
 .atcelts {
 	background-color: red;
 };
@@ -31,4 +35,8 @@
 };
 .pabeigts {
 	background-color: green;
+};
+
+.text_display {
+	background-color: white;
 }

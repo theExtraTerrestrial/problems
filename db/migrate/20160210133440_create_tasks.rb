@@ -14,6 +14,7 @@ class CreateTasks < ActiveRecord::Migration
       t.integer :admin_priority
       t.boolean :closed_by_admin
       t.boolean :closed_by_employee
+      t.integer :company_id
 
       t.timestamps null: false
     end

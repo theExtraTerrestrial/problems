@@ -7,8 +7,11 @@ class Task < ActiveRecord::Base
   accepts_nested_attributes_for :task_logs, allow_destroy: true
   validates :category_id, presence: true
   validates :name, presence: true
+  validates :employee_deadline, date: { after_or_equal_to: Proc.new{ Time.now }, message: "Atpakaļ ejoši datumi nav atļauti."}, unless: :admin?
+  attr_accessor :is_admin
+  
 
-  after_create :notify_admin
+  # after_create :notify_admin
 
   scope :recent, ->(num) {order(created_at: :desc).limit(num)}
 
@@ -17,5 +20,9 @@ class Task < ActiveRecord::Base
 
   def notify_admin
     Emailer.notification(self).deliver
+  end
+
+  def admin?
+    :is_admin
   end
 end
