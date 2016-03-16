@@ -1,17 +1,16 @@
 class Task < ActiveRecord::Base
   belongs_to :admin_user
   belongs_to :category
+  belongs_to :company
   has_many :task_images
   has_many :task_logs
   accepts_nested_attributes_for :task_images, allow_destroy: true
   accepts_nested_attributes_for :task_logs, allow_destroy: true
   validates :category_id, presence: true
   validates :name, presence: true
-  validates :employee_deadline, date: { after_or_equal_to: Proc.new{ Time.now }, message: "Atpakaļ ejoši datumi nav atļauti."}, unless: :admin?
-  attr_accessor :is_admin
-  
+  # validates :employee_deadline, date: { after_or_equal_to: Proc.new{ Time.now }, message: "Atpakaļ ejoši datumi nav atļautix.", allow_blank: true}, if: :validate_employee_deadline
 
-  # after_create :notify_admin
+  after_create :notify_admin
 
   scope :recent, ->(num) {order(created_at: :desc).limit(num)}
 
@@ -20,9 +19,5 @@ class Task < ActiveRecord::Base
 
   def notify_admin
     Emailer.notification(self).deliver
-  end
-
-  def admin?
-    :is_admin
   end
 end

@@ -45,11 +45,12 @@ ActiveAdmin.register AdminUser do
     f.actions
   end
 
-  show title: proc{current_admin_user.full_name} do |s|
+  show do |s|
     panel 'Lietotāja pamatinformācija' do
       attributes_table_for s do
         row 'Vārds' do |r| r.first_name end
         row 'Uzvārds' do |r| r.last_name end
+        row 'Uzņēmums' do |r| r.company.name rescue "-" end
         row 'Loma' do |r| Role.find(r.role_id).name end
       end
     end

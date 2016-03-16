@@ -45,11 +45,33 @@ ActiveAdmin.register Task do
     task_logs_attributes: [:id, :time, :description, :task_id, :_destroy]
 
   before_build do |record|
-    record.admin_user_id = current_admin_user.id
     record.creator_id = current_admin_user.id
+    record.admin_user_id = current_admin_user.id
     record.state = 1
-    record.company_id = current_admin_user.company_id
-    record.is_admin = current_admin_user.can? :manage, AdminUser
+    record.company_id = current_admin_user.company.id unless can? :manage, AdminUser
+  end
+
+  controller do
+    before_filter :validate_employee_date, only: [:create, :update]
+
+    private
+
+      def validate_employee_date
+        unless request.xhr?
+          @task = Task.new(task_params)
+          if (@task.employee_deadline < Time.now) && (cannot? :manage, AdminUser) 
+            flash[:error] = "Atpakaļ ejoši datumi nav atļauti."
+            redirect_to new_admin_task_path
+          end
+        end
+      end
+
+      def task_params
+        params.require(:task).permit(:name, :description, :admin_deadline, :employee_deadline, :state, :company_id,
+          :category_id, :creator_id, :responsible_id, :admin_priority, :user_priority, :admin_user_id,
+          task_images_attributes: [:id, :name, :description, :image, :_destroy],
+          task_logs_attributes: [:id, :time, :description, :task_id, :_destroy])
+      end
   end
 
   member_action :close, method: :get do 
@@ -80,15 +102,19 @@ ActiveAdmin.register Task do
 
   
   filter :state, as: :select, label: 'Stāvoklis', collection: Task::STATUS.each{|k,v| [k,v] }
-  filter :admin_user_company_name, as: :select, label: 'Uzņēmums', collection: -> {Company.all.map(&:name)} if ActiveRecord::Base.connection.table_exists? 'companies'
+  filter :company, label: 'Uzņēmums', if: proc {can? :manage, AdminUser}
   filter :category, label: 'Kategorija'
-  filter :creator_id, as: :select, label: 'Izveidotājs', collection: -> {AdminUser.all.map(&:full_name)} if ActiveRecord::Base.connection.table_exists? 'admin_users'
-  filter :admin_priority, as: :select, label: 'Admina prioritāte', collection: -> {Task::PRIORITY.keys}
+  filter :creator_id, as: :select, label: 'Izveidotājs', if: proc {can? :manage, AdminUser}, collection: -> {AdminUser.all.map(&:full_name)} if ActiveRecord::Base.connection.table_exists? 'admin_users'
+  filter :admin_priority, as: :select, label: 'Admina prioritāte', collection: -> {Task::PRIORITY.keys}, if: proc {can? :manage, AdminUser}
   filter :user_priority, as: :select, label: 'Darbinieka prioritāte', collection: -> {Task::PRIORITY.keys}
 
   form do |f|
     f.panel 'Pamatinformācija' do 
       f.inputs do
+        f.input :admin_user_id, as: :hidden
+        f.input :creator_id, as: :hidden
+        f.input :state, as: :hidden 
+        f.input :company_id, as: :hidden
         f.input :name, label: 'Temats'
         f.input :category, label: 'Kategorija', include_blank: false
         f.input :description, label: 'Aprkasts'
@@ -121,15 +147,15 @@ ActiveAdmin.register Task do
     f.actions
   end
 
-  index do 
+  index title: proc{'Pieteikumu saraksts'} do 
     selectable_column
-    column 'Uzņēmums' do |t| Company.find(t.company_id).name rescue "-" end
     column 'Temats', :name do |t| link_to t.name, admin_task_path(t) end
-    column 'Aprkasts', :description do |t| truncate(t.description, length: 30) end
+    # column 'Aprkasts', :description do |t| truncate(t.description, length: 30) end
     column 'Kategorija' do |t| Category.find(t.category_id).name end
-    column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
+    column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "Nav noteikts" end
     column 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
-    if can? :manage, AdminUser 
+    if can? :manage, AdminUser
+      column 'Uzņēmums' do |t| Company.find(t.company_id).name rescue "-" end 
       column 'Admina prioritāte', :admin_priority do |t| best_in_place t, :admin_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
         value: Task::PRIORITY.key(t.admin_priority), class: "best_in_place" end
       column 'Darbinieka prioritāte', :user_priority do |t| best_in_place t, :user_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
@@ -139,9 +165,8 @@ ActiveAdmin.register Task do
         value: Task::STATUS.key(t.state), class: "state_button best_in_place #{Task::STATUS.key(t.state)}"
       end
     else
-      column 'Prioritāte', :user_priority do |t| Task::PRIORITY.key(t.user_priority) end
-      column 'Stavoklis' do |t| best_in_place t, :user_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
-        value: Task::PRIORITY.key(t.user_priority), class: "best_in_place" end
+      column 'Prioritāte', :user_priority do |t| span class: "#{Task::PRIORITY.key(t.user_priority).gsub!(' ','_' )} priority" do Task::PRIORITY.key(t.user_priority) end end
+      column 'Stavoklis', :state do |t| span class: "state_button #{Task::STATUS.key(t.state)}" do Task::STATUS.key(t.state) end end
     end
     actions
   end
@@ -152,6 +177,7 @@ ActiveAdmin.register Task do
       column do
         panel 'Pieteikuma informācija' do
           attributes_table_for task do
+            row 'Uzņēmums', :company_id
             row 'Temats', :name do |t| t.name end
             row 'Kategorija' do |t| Category.find(t.category_id).name end
             row 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
@@ -207,12 +233,5 @@ ActiveAdmin.register Task do
     end
     active_admin_comments
   end
-
-  # sidebar "Nostrādātais laiks", only: :show do
-  #   table_for task.task_logs.all.map(&:time).inject(:+) do
-  #     column 'Laiks(h)' do |time| time end
-  #     column '' do link_to 'Pārskatīt pierakstītos laikus', admin_task_task_logs_path(Task.find(params[:id])) unless task.task_logs.empty? end
-  #   end
-  # end
 
 end

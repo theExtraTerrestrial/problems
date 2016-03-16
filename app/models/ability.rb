@@ -17,7 +17,7 @@ class Ability
 
         can :create, Task
         cannot :read, Task
-        can :manage, Task, creator_id: user.id
+        can :manage, Task, admin_user_id: user.id
 
         can [:create, :destroy], TaskImage
         cannot :read, TaskImage

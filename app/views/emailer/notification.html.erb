@@ -4,8 +4,8 @@
           <tr height="20" style="border-bottom: 1px solid #CCC;">
             <span style="font-weight:bold;font-size:15px"><%= "Ir izveidots jauns pieteikums" %></span>
           </tr>
-              <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Vārds, Uzvārds: " %> </span><%= " #{AdminUser.find(@object.creator_id).full_name}" %></td></tr>
-              <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "E-pasta adrese: " %> </span><%= " #{AdminUser.find(@object.creator_id).email}" %></td></tr>
+              <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Vārds, Uzvārds: " %> </span><%= " #{@object.admin_user.full_name}" %></td></tr>
+              <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "E-pasta adrese: " %> </span><%= " #{@object.admin_user.email}" %></td></tr>
               <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Temats: " %> </span><%= " #{@object.name}" %></td></tr>
               <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Apraksts: " %> </span><%= " #{@object.description}" %></td></tr>
               <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Darbinieka prioritāte: " %> </span><%= " #{@object.user_priority}" %></td></tr>
