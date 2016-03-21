@@ -27,14 +27,6 @@ ActiveAdmin.register Task do
         create!{admin_task_path( Task.find(params[:task_id])) }
       end
     end
-
-    form do |f|
-      f.inputs do
-        f.input :time, label: 'Nostrādātais laiks(h)'
-        f.input :description, as: :string, label: 'Komentārs'
-      end
-      f.actions
-    end
   end
   
   menu label: 'Pieteikumi'
@@ -105,8 +97,8 @@ ActiveAdmin.register Task do
   filter :company, label: 'Uzņēmums', if: proc {can? :manage, AdminUser}
   filter :category, label: 'Kategorija'
   filter :creator_id, as: :select, label: 'Izveidotājs', if: proc {can? :manage, AdminUser}, collection: -> {AdminUser.all.map(&:full_name)} if ActiveRecord::Base.connection.table_exists? 'admin_users'
-  filter :admin_priority, as: :select, label: 'Admina prioritāte', collection: -> {Task::PRIORITY.keys}, if: proc {can? :manage, AdminUser}
-  filter :user_priority, as: :select, label: 'Darbinieka prioritāte', collection: -> {Task::PRIORITY.keys}
+  filter :admin_priority, as: :select, label: 'Admina prioritāte', collection: -> {Task::PRIORITY.each {|k,v| [k,v] }}, if: proc {can? :manage, AdminUser}
+  filter :user_priority, as: :select, label: 'Darbinieka prioritāte', collection: -> {Task::PRIORITY.each {|k,v| [k,v] }}
 
   form do |f|
     f.panel 'Pamatinformācija' do 
@@ -132,7 +124,7 @@ ActiveAdmin.register Task do
         else
           f.input :user_priority, as: :select, collection: Task::PRIORITY,
             include_blank: false, label: 'Prioritāte'
-          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {min_date: '0'}, label: 'Izpildes termiņš'
+          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {min_date: '0', min_time: '0'}, label: 'Izpildes termiņš'
         end
       end
     end
@@ -165,7 +157,7 @@ ActiveAdmin.register Task do
         value: Task::STATUS.key(t.state), class: "state_button best_in_place #{Task::STATUS.key(t.state)}"
       end
     else
-      column 'Prioritāte', :user_priority do |t| span class: "#{Task::PRIORITY.key(t.user_priority).gsub!(' ','_' )} priority" do Task::PRIORITY.key(t.user_priority) end end
+      column 'Prioritāte', :user_priority do |t| span class: "state_button #{Task::PRIORITY.key(t.user_priority).gsub(' ','_' )}" do Task::PRIORITY.key(t.user_priority) end end
       column 'Stavoklis', :state do |t| span class: "state_button #{Task::STATUS.key(t.state)}" do Task::STATUS.key(t.state) end end
     end
     actions
