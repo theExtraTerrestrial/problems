@@ -65,6 +65,7 @@ ActiveAdmin.register Task do
   end
 
   member_action :close, method: :get do 
+    session[:return_to] ||= request.referer
     if resource.closed_by_admin || resource.closed_by_employee
       if can? :manage, AdminUser
         resource.update_attribute('closed_by_admin', false)
@@ -73,7 +74,7 @@ ActiveAdmin.register Task do
         resource.update_attribute('closed_by_employee', false)
         resource.update_attribute('state', 1)
       end
-      redirect_to admin_task_path, notice: "Pieteikuma atcelšana ir atsaukta"
+      redirect_to session.delete(:return_to), notice: "Pieteikuma atcelšana ir atsaukta"
     else
       if can? :manage, AdminUser
         resource.update_attribute('closed_by_admin', true)
@@ -82,7 +83,7 @@ ActiveAdmin.register Task do
         resource.update_attribute('closed_by_employee', true)
         resource.update_attribute('state', 3)
       end
-      redirect_to admin_task_path, notice: "Pieteikums ir atcelts"
+      redirect_to session.delete(:return_to), notice: "Pieteikums ir atcelts"
     end
   end
 
@@ -115,8 +116,8 @@ ActiveAdmin.register Task do
             include_blank: false, label: 'Darbinieka prioritāte'
           f.input :admin_priority, as: :select, collection: Task::PRIORITY,
             include_blank: false, label: 'Admina prioritāte'
-          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {lang: 'lv'}, label: 'Darbinieka termiņš', class: 'date_time_picker'
-          f.input :admin_deadline, as: :date_time_picker, label: 'Admina termiņš', class: 'date_time_picker'
+          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {lang: 'lv'}, label: 'Darbinieka termiņš', class: 'date_time_picker datetime_field'
+          f.input :admin_deadline, as: :date_time_picker, label: 'Admina termiņš', class: 'date_time_picker datetime_field'
           f.input :responsible_id, :as => :select, :collection => 
             AdminUser.admins, label: 'Atbildīgais administrators'
         else
@@ -138,7 +139,6 @@ ActiveAdmin.register Task do
   end
 
   index title: proc{'Pieteikumu saraksts'} do 
-    selectable_column
     column 'Temats', :name do |t| link_to t.name, admin_task_path(t) end
     # column 'Aprkasts', :description do |t| truncate(t.description, length: 30) end
     column 'Kategorija' do |t| Category.find(t.category_id).name end
@@ -158,7 +158,13 @@ ActiveAdmin.register Task do
       column 'Prioritāte', :user_priority do |t| span class: "state_button #{Task::PRIORITY.key(t.user_priority).gsub(' ','_' )}" do Task::PRIORITY.key(t.user_priority) end end
       column 'Stavoklis', :state do |t| span class: "state_button #{Task::STATUS.key(t.state)}" do Task::STATUS.key(t.state) end end
     end
-    actions
+    actions do |t|
+      if t.closed_by_employee || t.closed_by_admin
+        link_to 'Atsaukt atcelšanu', close_admin_task_path(t)
+      else
+        link_to 'Atcelt pieteikumu', close_admin_task_path(t)
+      end
+    end
   end
 
 
@@ -192,12 +198,12 @@ ActiveAdmin.register Task do
               row 'Stavoklis' do |t| Task::STATUS.key(t.state) end
             end
             row 'Atcelt' do |t| 
-                if t.closed_by_employee || t.closed_by_admin
-                  link_to 'Atsaukt atcelšanu', close_admin_task_path(t)
-                else
-                  link_to 'Atcelt pieteikumu', close_admin_task_path(t)
-                end
+              if t.closed_by_employee || t.closed_by_admin
+                link_to 'Atsaukt atcelšanu', close_admin_task_path(t)
+              else
+                link_to 'Atcelt pieteikumu', close_admin_task_path(t)
               end
+            end
           end
         end
       end

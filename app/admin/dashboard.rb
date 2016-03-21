@@ -4,8 +4,7 @@ ActiveAdmin.register_page "Dashboard" do
 
   content title: 'Pieteikumu sistēma' do
     panel 'Jaunākie notikumi' do
-      ul do
-      end
+      render_activities(PublicActivity::Activity.all)
     end
     columns do
       if can? :manage, AdminUser

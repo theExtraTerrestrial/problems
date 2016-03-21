@@ -6,7 +6,7 @@ ActiveAdmin.register Setting do
   filter :name, :label => "Nosaukums"
   filter :value, :label => "Vērtība"
   filter :description, :label => "Apraksts"
-  filter :created_at, :label =>  "Izveidots"
+  filter :created_at, as: :date_time_range, datepicker_options: {min_date: '0', min_time: '0', lang: 'lv'}, :label =>  "Izveidots"
 
   config.clear_action_items! 
 

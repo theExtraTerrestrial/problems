@@ -5,6 +5,13 @@ lv:
     edit_model: "Rediģēt %{model}"
     update_model: "Labot %{model}"
     delete_model: "Dzēst %{model}"
+    search_status:
+      headline: "Meklēšanas statuss"
+      current_scope: "Mērogs"
+      current_filters: "Izmantotie filtri"
+    filters:
+      predicates:
+        eq: "Vienāds ar"
   formtastic:
     :yes: 'Jā'
     :no: 'Nē'

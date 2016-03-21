@@ -8,7 +8,9 @@ class Task < ActiveRecord::Base
   accepts_nested_attributes_for :task_logs, allow_destroy: true
   validates :category_id, presence: true
   validates :name, presence: true
-  # validates :employee_deadline, date: { after_or_equal_to: Proc.new{ Time.now }, message: "Atpakaļ ejoši datumi nav atļautix.", allow_blank: true}, if: :validate_employee_deadline
+  has_paper_trail
+  include PublicActivity::Model
+  tracked
 
   after_create :notify_admin
 
