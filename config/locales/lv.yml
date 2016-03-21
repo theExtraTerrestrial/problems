@@ -1,6 +1,26 @@
 lv:
   active_admin:
     new_model: "Jauns %{model}"
-    create_model: "Izveidot %{model}"
+    create_model: "Izveidot jaunu %{model}"
     edit_model: "Rediģēt %{model}"
-    update_model: "Labot %{model}"    
+    update_model: "Labot %{model}"
+    delete_model: "Dzēst %{model}"
+  formtastic:
+    :yes: 'Jā'
+    :no: 'Nē'
+    :create: 'Izveidot jaunu'
+    :update: 'Labot'
+    :submit: 'Pabeigt'
+    :cancel: 'Atcelt'
+    :reset: 'Atiestatīt'
+    :required: 'obligāti'
+  activerecord:
+    models:
+      task: 'Pieteikums'
+      task_image: 'Pieteukuma attēls'
+  date:
+    formats:
+      long: "%Y-%m-%d"
+  time:
+    formats:
+      long: "%Y-%m-%d %H:%M:%S"

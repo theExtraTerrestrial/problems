@@ -3,6 +3,10 @@ ActiveAdmin.register_page "Dashboard" do
   menu priority: 1, label: 'Galvenais panelis'
 
   content title: 'Pieteikumu sistēma' do
+    panel 'Jaunākie notikumi' do
+      ul do
+      end
+    end
     columns do
       if can? :manage, AdminUser
         column do

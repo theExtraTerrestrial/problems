@@ -26,17 +26,17 @@ ActiveAdmin.register AdminUser do
   end
 
   filter :email, label: 'E-pasts'
-  filter :created_at, as: :date_time_range, label: 'Izveidots periodā no-līdz'
+  filter :created_at, as: :date_time_range, datepicker_options: {min_date: '0', min_time: '0', lang: 'lv'}, label: 'Izveidots periodā no-līdz'
   filter :role_id, as: :select, label: 'Loma', collection: proc {Role.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'roles'
   filter :company_id, as: :select, label: 'Uzņēmums', collection: proc {Company.all.map{|u| ["#{u.name}", u.id]}} if ActiveRecord::Base.connection.table_exists? 'companies'
 
   form do |f|
     f.inputs "Lietotāja pamatinformācija" do
-      f.input :email
-      f.input :password
-      f.input :password_confirmation
-      f.input :first_name
-      f.input :last_name
+      f.input :email, label: 'E-pasts'
+      f.input :password, label: 'Parole'
+      f.input :password_confirmation, label: 'Atkārtot paroli'
+      f.input :first_name, label: 'Vārds'
+      f.input :last_name, label: 'Uzvārds'
       if can? :manage, AdminUser
         f.input :role_id, as: :select, collection: Role.all.map{|u| ["#{u.name}", u.id]}
         f.input :company_id, as: :select, collection: Company.all.map{|u| ["#{u.name}", u.id]}

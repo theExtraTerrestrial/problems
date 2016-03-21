@@ -18,8 +18,6 @@ ActiveAdmin.register Task do
   ActiveAdmin.register TaskLog do
     belongs_to :task
 
-    menu false
-
     permit_params :time, :description, :id
 
     controller do
@@ -49,9 +47,9 @@ ActiveAdmin.register Task do
     private
 
       def validate_employee_date
-        unless request.xhr?
+        unless (request.xhr?)||(can? :manage, AdminUser)
           @task = Task.new(task_params)
-          if (@task.employee_deadline < Time.now) && (cannot? :manage, AdminUser) 
+          if (@task.employee_deadline < Time.now)
             flash[:error] = "Atpakaļ ejoši datumi nav atļauti."
             redirect_to new_admin_task_path
           end
@@ -117,14 +115,14 @@ ActiveAdmin.register Task do
             include_blank: false, label: 'Darbinieka prioritāte'
           f.input :admin_priority, as: :select, collection: Task::PRIORITY,
             include_blank: false, label: 'Admina prioritāte'
-          f.input :employee_deadline, as: :date_time_picker, label: 'Darbinieka termiņš', class: 'date_time_picker'
+          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {lang: 'lv'}, label: 'Darbinieka termiņš', class: 'date_time_picker'
           f.input :admin_deadline, as: :date_time_picker, label: 'Admina termiņš', class: 'date_time_picker'
           f.input :responsible_id, :as => :select, :collection => 
             AdminUser.admins, label: 'Atbildīgais administrators'
         else
           f.input :user_priority, as: :select, collection: Task::PRIORITY,
             include_blank: false, label: 'Prioritāte'
-          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {min_date: '0', min_time: '0'}, label: 'Izpildes termiņš'
+          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {min_date: '0', min_time: '0', lang: 'lv'}, label: 'Izpildes termiņš'
         end
       end
     end
@@ -186,7 +184,7 @@ ActiveAdmin.register Task do
               end
               row 'Patērētais laiks(h)' do |t| 
                 best_in_place t.task_logs.last.nil? ? tl = t.task_logs.create!() : tl = t.task_logs.last, :time,
-                  as: :input, url: [:admin, t,tl], class: "best_in_place", place_holder: "------" end
+                  as: :input, url: [:admin,t,tl], class: "best_in_place", place_holder: "------" end
               # column '' do |t| link_to 'Pārskatīt pierakstītos laikus', admin_task_task_logs_path(t) end    
             else
               row 'Termiņš' do |t| t.employee_deadline.strftime('%d.%m.%Y %H:%M') end
