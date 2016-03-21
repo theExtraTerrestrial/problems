@@ -14,19 +14,17 @@ unless Role.exists?
   Role.create!(name: 'Admin')
   Role.create!(name: 'Darbinieks')
 end
-unless Category.exists?
-  [
-    ["Organizatoriskie / saimnieciskie jaut."],
-    ["Datori / datortehnika"],
-    ["SDM"],
-    ["SDM2"],
-    ["Klients"],
-    ["Darbinieks"],
-    ["Klients un Darbinieks"],
-    ["Cits"]
-  ].each do |s|
+[
+  ["Organizatoriskie / saimnieciskie jaut."],
+  ["Datori / datortehnika"],
+  ["SDM"],
+  ["SDM2"],
+  ["Klients"],
+  ["Darbinieks"],
+  ["Klients un Darbinieks"],
+  ["Cits"]
+].each do |s|
       Category.create!(:name => s[0]) unless Category.where(:name => s[0]).count > 0
-    end
 end
 
 unless Company.exists?
