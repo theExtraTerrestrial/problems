@@ -8,9 +8,8 @@ class Task < ActiveRecord::Base
   accepts_nested_attributes_for :task_logs, allow_destroy: true
   validates :category_id, presence: true
   validates :name, presence: true
-  has_paper_trail
-  include PublicActivity::Model
-  tracked
+  validates :employee_deadline, presence: true
+  has_paper_trail ignore: [:updated_at, :created_at]
 
   after_create :notify_admin
 

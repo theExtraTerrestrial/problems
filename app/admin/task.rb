@@ -40,29 +40,17 @@ ActiveAdmin.register Task do
     record.state = 1
     record.company_id = current_admin_user.company.id unless can? :manage, AdminUser
   end
-
-  controller do
-    before_filter :validate_employee_date, only: [:create, :update]
-
-    private
-
-      def validate_employee_date
-        unless (request.xhr?)||(can? :manage, AdminUser)
-          @task = Task.new(task_params)
-          if (@task.employee_deadline < Time.now)
-            flash[:error] = "Atpakaļ ejoši datumi nav atļauti."
-            redirect_to new_admin_task_path
-          end
-        end
+  
+  after_create do |record|
+    unless (request.xhr?)||(can? :manage, AdminUser)
+      if (record.employee_deadline)&&(record.employee_deadline < Time.now)
+        flash[:error] = "Atpakaļ ejoši datumi nav atļauti."
+        redirect_to new_admin_task_path
       end
-
-      def task_params
-        params.require(:task).permit(:name, :description, :admin_deadline, :employee_deadline, :state, :company_id,
-          :category_id, :creator_id, :responsible_id, :admin_priority, :user_priority, :admin_user_id,
-          task_images_attributes: [:id, :name, :description, :image, :_destroy],
-          task_logs_attributes: [:id, :time, :description, :task_id, :_destroy])
-      end
+    end
   end
+
+
 
   member_action :close, method: :get do 
     session[:return_to] ||= request.referer
@@ -116,7 +104,7 @@ ActiveAdmin.register Task do
             include_blank: false, label: 'Darbinieka prioritāte'
           f.input :admin_priority, as: :select, collection: Task::PRIORITY,
             include_blank: false, label: 'Admina prioritāte'
-          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {lang: 'lv'}, label: 'Darbinieka termiņš', class: 'date_time_picker datetime_field'
+          f.input :employee_deadline, as: :date_time_picker, datepicker_options: {lang: 'lv'}, label: 'Darbinieka termiņš', class: 'date_time_picker datetime_field', allow_blank: false
           f.input :admin_deadline, as: :date_time_picker, label: 'Admina termiņš', class: 'date_time_picker datetime_field'
           f.input :responsible_id, :as => :select, :collection => 
             AdminUser.admins, label: 'Atbildīgais administrators'

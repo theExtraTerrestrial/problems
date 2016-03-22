@@ -6,9 +6,6 @@ class AdminUser < ActiveRecord::Base
   belongs_to :company
   belongs_to :role
   has_many :tasks
-  has_paper_trail
-  include PublicActivity::Model
-  tracked
 
   scope :admins, -> { where(role_id: 1) }
 

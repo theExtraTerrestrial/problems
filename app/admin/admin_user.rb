@@ -15,7 +15,6 @@ ActiveAdmin.register AdminUser do
   end
 
   index title: 'Lietotāji' do
-    selectable_column
     column 'E-pasts', :email
     column 'Loma', :role_id do |c| Role.find(c.role_id).name end
     column 'Uzņēmums', :company_id do |c| Company.find(c.company_id).name rescue "-" end

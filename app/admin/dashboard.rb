@@ -4,8 +4,17 @@ ActiveAdmin.register_page "Dashboard" do
 
   content title: 'Pieteikumu sistēma' do
     panel 'Jaunākie notikumi' do
-      render_activities(PublicActivity::Activity.all)
+      table_for PaperTrail::Version.all do
+        column 'Atbildīgais' do |v| link_to AdminUser.find(v.whodunnit).full_name, admin_admin_user_path(v.whodunnit) rescue "-" end
+        column 'Resursa tips' do |v| I18n.t(v.item_type.downcase) end
+        column 'Notikums' do |v| I18n.t (v.event) end
+        column 'Kas tika mainits' do |v| v.changeset.to_a.each do |k,v|
+            li "#{k.titleize}: v.join(' => ')" 
+          end 
+        end
+      end
     end
+
     columns do
       if can? :manage, AdminUser
         column do
