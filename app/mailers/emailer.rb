@@ -9,14 +9,14 @@ class Emailer < ActionMailer::Base
     }
 
   default_url_options[:host] = "#{DOMAIN_NAME}"
-  default :from => "Trejdevini Saieti <noreplay@saietstrejdevini.lv>"
+  default :from => "Atbalsts SDM <noreply@sdm.lv>"
 
   def notification(task)
     @object = task
     # raise @object.inspect
     mail(
       :to => Setting.uncached_value_for('main_admin_email'),
-      :from => "Trejdevini Saieti <noreplay@saietstrejdevini.lv>",
+      :from => "Atbalsts SDM <noreply@sdm.lv>",
       :subject => "Jauns pieteikums"
     )
   end  

@@ -26,13 +26,32 @@ ActiveAdmin.register Task do
       end
     end
   end
+
+  ActiveAdmin.register TaskEmail do
+    belongs_to :task
+  
+    menu false
+  
+    permit_params :title, :description, :task_id, :reciever_id, :sender_id
+
+    form do |f|
+      f.inputs do
+        f.input :title, label: 'Virsraksts'
+        f.input :description, as: :text, label: 'Saturs'
+        f.input :reciever_id, input_html: { value: AdminUser.find(params[:reciever_id]).email}, as: :email, label: 'Saņēmējs'
+        f.input :sender_id, as: :hidden, input_html: {value: params[:sender_id]}, label: 'Sūtītājs'
+      end
+      f.actions
+    end
+  end
   
   menu label: 'Pieteikumi'
 
   permit_params :name, :description, :admin_deadline, :employee_deadline, :state, :company_id,
     :category_id, :creator_id, :responsible_id, :admin_priority, :user_priority, :admin_user_id,
     task_images_attributes: [:id, :name, :description, :image, :_destroy],
-    task_logs_attributes: [:id, :time, :description, :task_id, :_destroy]
+    task_logs_attributes: [:id, :time, :description, :task_id, :_destroy],
+    task_emails_attributes: [:title, :description, :task_id, :reciever_id, :sender_id, :id, :_destroy]
 
   before_build do |record|
     record.creator_id = current_admin_user.id
@@ -75,9 +94,9 @@ ActiveAdmin.register Task do
     end
   end
 
-  # action_item :view, only: :show, if: proc {can? :manage, AdminUser} do
-  #   link_to 'Reģistrēt laiku', new_admin_task_task_log_path(task_id: params[:id])
-  # end
+  action_item :new_email, only: :show, if: proc {can? :manage, AdminUser} do
+    link_to 'Nosūtīt ziņojumu', new_admin_task_task_email_path(task_id: task.id, reciever_id: task.admin_user.id, sender_id: current_admin_user.id)
+  end
 
   
   filter :state, as: :select, label: 'Stāvoklis', collection: Task::STATUS.each{|k,v| [k,v] }
@@ -214,6 +233,15 @@ ActiveAdmin.register Task do
           data: {:confirm => 'Esat pārliecināts?'}, :method => :delete end
       end
       li link_to 'Pievienot attēlu', edit_admin_task_path(task)
+    end
+    if can? :manage,  AdminUser
+      panel 'Nosūtītie ziņojumi' do
+        table_for task.task_emails do
+          column 'Temats' do |m| end 
+          column 'Sūtītājs' do |m| end
+          column 'Nosūtīts' do |m| end
+        end
+      end
     end
     active_admin_comments
   end

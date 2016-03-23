@@ -13,5 +13,10 @@ $(document).ready(function(){
   $('.state_button').bind("ajax:success", function(){
   	$(this).closest('tr').effect('highlight');
   	
-  });  
+  });
+
+  $('.read-more').on('click', function(e){
+  	e.preventDefault();
+  	$(this).parent().toggle();
+  });
 })

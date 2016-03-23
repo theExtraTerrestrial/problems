@@ -42,3 +42,20 @@ lv:
   task: "Pieteikums"
   update: "Izmaiņas"
   create: "Izviedots"
+  name: "Nosaukums"
+  description: Apraksts
+  creator_id: Izveidotājs
+  admin_deadline: Admina termiņš
+  employee_deadline: Darbinieka termiņš
+  state: Stāvoklis
+  category_id: Kategorija
+  responsible_id: Atbildīgais admins
+  admin_user_id: Sasaistītais lietotājs
+  user_priority: Darbinieka prioritāte
+  admin_priority: Admina prioritāte
+  closed_by_admin: Aizvēra admins
+  closed_by_employee: Aizvēra darbinieks
+  company_id: Uzņēmums
+  created_at: Izviedots
+  updated_at: Mainīts
+  id: Id
