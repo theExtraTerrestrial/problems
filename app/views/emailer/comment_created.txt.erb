@@ -1,0 +1,3 @@
+Vārds, Uzvārds:  <%= " #{AdminUser.find(@object.author_id).full_name}" %>
+E-pasta adrese:  <%= " #{AdminUser.find(@object.author_id).email}" %>
+Saite:           <%= link_to "Šeit", "#{DOMAIN_NAME}/admin/#{@object.resource_type.underscore.pluralize}/#{@object.resource_id}/", anchor: "comment_#{comment.id}" %>

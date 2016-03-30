@@ -1,22 +1,31 @@
+require 'nokogiri'
 ActiveAdmin.register_page "Dashboard" do
 
   menu priority: 1, label: 'Galvenais panelis'
 
   content title: 'Pieteikumu sistēma' do
-    panel 'Jaunākie notikumi' do
-      table_for PaperTrail::Version.all do
-        column 'Atbildīgais' do |v| link_to AdminUser.find(v.whodunnit).full_name, admin_admin_user_path(v.whodunnit) rescue "-" end
-        column 'Resursa tips' do |v| I18n.t(v.item_type.downcase) end
-        column 'Notikums' do |v| I18n.t (v.event) end
-        column 'Kas tika mainits' do |v| v.changeset.to_a.each do |k,v|
-            li "#{k.titleize}: v.join(' => ')" 
-          end 
-        end
-      end
-    end
-
     columns do
       if can? :manage, AdminUser
+        panel 'Jaunākie notikumi' do
+          table_for PaperTrail::Version.all do
+            column 'Atbildīgais' do |v| link_to AdminUser.find(v.whodunnit).full_name, admin_admin_user_path(v.whodunnit) rescue "-" end
+            column 'Resursa tips' do |v| I18n.t(v.item_type.downcase) end
+            column 'Notikums' do |v| I18n.t (v.event) end
+            column 'Izmaiņas' do |v| 
+              div class: "ul-div" do
+                ul do
+                  v.changeset.to_a.each do |key,val| 
+                    a = "#{I18n.t(key).titleize}: #{val.join(' => ')}"
+                    if key == v.changeset.to_a[0][0]
+                      div class: 'ul-header' do li link_to "#{truncate(a.html_safe, length: 30, omission: '..Vairāk')}", '#', class: "read-more" end
+                    else li a
+                    end 
+                  end
+                end
+              end
+            end
+          end
+        end
         column do
           panel "Tev uzticētie pieteikumi" do
             table_for Task.where('responsible_id = ?', current_admin_user.id).map do

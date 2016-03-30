@@ -2,6 +2,5 @@ Jauns pieteikums
 
 <%= "Vārds, Uzvārds: " %> <%= " #{@object.admin_user.full_name}" %>
 <%= "E-pasta adrese: " %> <%= " #{@object.email}" %>
-<%= "Temats: " %> <%= " #{@object.name}" %>
-<%= "Apraksts: " %> <%= " #{@object.description}" %>
+<%= "Temats: " %> <%= " #{link_to @object.name, admin_task_path(@object)}" %>
 <%= "Darbinieka prioritāte: " %> <%= " #{@object.user_priority}" %>

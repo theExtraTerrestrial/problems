@@ -1,24 +1,45 @@
 class Emailer < ActionMailer::Base
 
   ActionMailer::Base.raise_delivery_errors = true
+  ActionMailer::Base.delivery_method = :smtp
   ActionMailer::Base.smtp_settings = {
-      :address  => 'mail.telia.lv',
-      #:port  => 25,
-      :openssl_verify_mode  => 'none',
-      :host => 'mail.telia.lv'
+      # :address  => 'mail.telia.lv',
+      :address  => 'localhost',
+      :port  => 1025,
+      # :openssl_verify_mode  => 'none',
+      # :host => 'mail.telia.lv'
     }
 
   default_url_options[:host] = "#{DOMAIN_NAME}"
-  default :from => "Trejdevini Saieti <noreplay@saietstrejdevini.lv>"
+  default :from => "Atbalsts SDM <noreply@sdm.lv>"
 
   def notification(task)
     @object = task
     # raise @object.inspect
     mail(
       :to => Setting.uncached_value_for('main_admin_email'),
-      :from => "Trejdevini Saieti <noreplay@saietstrejdevini.lv>",
+      :from => "Atbalsts SDM <noreply@sdm.lv>",
       :subject => "Jauns pieteikums"
     )
-  end  
+  end
+
+  def e_mail(task)
+    @object = task
+    # raise @object.inspect
+    mail(
+      :to => "#{AdminUser.find(@object.reciever_id).email}",
+      :from => "#{AdminUser.find(@object.sender_id).full_name} <#{AdminUser.find(@object.sender_id).email}>",
+      :subject => "#{@object.title}"
+    )
+  end
+
+  def comment_created(comment)
+    @object = comment
+    mail(
+      :to => Setting.uncached_value_for('main_admin_email'),
+      :from => "Atbalsts SDM <noreply@sdm.lv>",
+      :subject => "Jauns komentārs"
+    )
+  end
 
 end
