@@ -1,13 +1,13 @@
 class Emailer < ActionMailer::Base
 
   ActionMailer::Base.raise_delivery_errors = true
-  ActionMailer::Base.delivery_method = :smtp
+  # ActionMailer::Base.delivery_method = :smtp
   ActionMailer::Base.smtp_settings = {
-      # :address  => 'mail.telia.lv',
-      :address  => 'localhost',
-      :port  => 1025,
-      # :openssl_verify_mode  => 'none',
-      # :host => 'mail.telia.lv'
+      :address  => 'mail.telia.lv',
+      # :address  => 'localhost',
+      # :port  => 1025,
+      :openssl_verify_mode  => 'none',
+      :host => 'mail.telia.lv'
     }
 
   default_url_options[:host] = "#{DOMAIN_NAME}"
