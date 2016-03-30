@@ -12,11 +12,15 @@ $(document).ready(function(){
 
   $('.state_button').bind("ajax:success", function(){
   	$(this).closest('tr').effect('highlight');
-  	
   });
+
+  if ($('.ul-div').children().length > 2){
+  	$(this).children(":not.('.ul-header')").toggle();
+  };
 
   $('.read-more').on('click', function(e){
   	e.preventDefault();
   	$(this).parent().toggle();
   });
+
 })

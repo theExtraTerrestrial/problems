@@ -13,7 +13,7 @@ class Ability
         can :read, :all
 
         can :create, ActiveAdmin::Comment
-        can [:read, :edit, :destroy], ActiveAdmin::Comment, author_id: user.id
+        can :manage, ActiveAdmin::Comment, author_id: user.id
 
         can :create, Task
         cannot :read, Task

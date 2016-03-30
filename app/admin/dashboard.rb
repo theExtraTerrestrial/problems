@@ -12,12 +12,12 @@ ActiveAdmin.register_page "Dashboard" do
             column 'Resursa tips' do |v| I18n.t(v.item_type.downcase) end
             column 'Notikums' do |v| I18n.t (v.event) end
             column 'Izmaiņas' do |v| 
-              div do
+              div class: "ul-div" do
                 ul do
                   v.changeset.to_a.each do |key,val| 
                     a = "#{I18n.t(key).titleize}: #{val.join(' => ')}"
-                    if  v.changeset.size > 2 && key == v.changeset.to_a[0][0]
-                      div class: 'ul-header' do li link_to "#{truncate("Hellooooooooooooo", length: 10, omission: '..Vairāk')}", '#', class: "read-more" end
+                    if key == v.changeset.to_a[0][0]
+                      div class: 'ul-header' do li link_to "#{truncate(a.html_safe, length: 30, omission: '..Vairāk')}", '#', class: "read-more" end
                     else li a
                     end 
                   end

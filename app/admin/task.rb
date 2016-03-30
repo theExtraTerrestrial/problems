@@ -26,24 +26,6 @@ ActiveAdmin.register Task do
       end
     end
   end
-
-  ActiveAdmin.register TaskEmail do
-    belongs_to :task
-  
-    menu false
-  
-    permit_params :title, :description, :task_id, :reciever_id, :sender_id
-
-    form do |f|
-      f.inputs do
-        f.input :title, label: 'Virsraksts'
-        f.input :description, as: :text, label: 'Saturs'
-        f.input :reciever_id, input_html: { value: AdminUser.find(params[:reciever_id]).email}, as: :email, label: 'Saņēmējs'
-        f.input :sender_id, as: :hidden, input_html: {value: params[:sender_id]}, label: 'Sūtītājs'
-      end
-      f.actions
-    end
-  end
   
   menu label: 'Pieteikumi'
 
@@ -149,14 +131,22 @@ ActiveAdmin.register Task do
     column 'Temats', :name do |t| link_to t.name, admin_task_path(t) end
     # column 'Aprkasts', :description do |t| truncate(t.description, length: 30) end
     column 'Kategorija' do |t| Category.find(t.category_id).name end
-    column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "Nav noteikts" end
+    # column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "Nav noteikts" end
     column 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
     if can? :manage, AdminUser
+      column 'Atbildīgais lietotājs' do |t| 
+        best_in_place t, :responsible_id , as: :select, url: [:admin, t], collection: AdminUser.admins,
+        value: AdminUser.find(t.responsible_id).full_name, class: "best_in_place" rescue "Nav noteikts"
+      end
       column 'Uzņēmums' do |t| Company.find(t.company_id).name rescue "-" end 
-      column 'Admina prioritāte', :admin_priority do |t| best_in_place t, :admin_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
-        value: Task::PRIORITY.key(t.admin_priority), class: "best_in_place" end
-      column 'Darbinieka prioritāte', :user_priority do |t| best_in_place t, :user_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
-        value: Task::PRIORITY.key(t.user_priority), class: "best_in_place" end
+      column 'Admina prioritāte', :admin_priority do |t|
+        best_in_place t, :admin_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
+        value: Task::PRIORITY.key(t.admin_priority), class: "best_in_place"
+      end
+      column 'Darbinieka prioritāte', :user_priority do |t| 
+        best_in_place t, :user_priority , as: :select, url: [:admin, t], collection: Task::PRIORITY.keys,
+        value: Task::PRIORITY.key(t.user_priority), class: "best_in_place"
+      end
       column 'Stavoklis' do |t|
         best_in_place t, :state , as: :select, url: [:admin, t], collection: Task::STATUS.keys,
         value: Task::STATUS.key(t.state), class: "state_button best_in_place #{Task::STATUS.key(t.state)}"
@@ -180,7 +170,7 @@ ActiveAdmin.register Task do
       column do
         panel 'Pieteikuma informācija' do
           attributes_table_for task do
-            row 'Uzņēmums', :company_id
+            row 'Uzņēmums', :company_id do |t| t.company.name end
             row 'Temats', :name do |t| t.name end
             row 'Kategorija' do |t| Category.find(t.category_id).name end
             row 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end
@@ -237,9 +227,9 @@ ActiveAdmin.register Task do
     if can? :manage,  AdminUser
       panel 'Nosūtītie ziņojumi' do
         table_for task.task_emails do
-          column 'Temats' do |m| end 
-          column 'Sūtītājs' do |m| end
-          column 'Nosūtīts' do |m| end
+          column 'Temats' do |m| link_to m.title, admin_task_task_email_path(task_id: params[:id], id: m.id) end 
+          column 'Sūtītājs' do |m| AdminUser.find(m.sender_id).email end
+          column 'Nosūtīts' do |m| m.created_at end
         end
       end
     end

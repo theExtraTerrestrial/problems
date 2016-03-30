@@ -1,5 +1,8 @@
 lv:
   active_admin:
+    comments:
+      delete: "Dzēst"
+      edit: "Rediģēt"
     new_model: "Jauns %{model}"
     create_model: "Izveidot jaunu %{model}"
     edit_model: "Rediģēt %{model}"
@@ -35,27 +38,27 @@ lv:
         blank: "Lauks ir obligāti jāaizpilda."
   date:
     formats:
-      long: "%Y-%m-%d"
+      long: "%Y.%m.%d"
   time:
     formats:
-      long: "%Y-%m-%d %H:%M:%S"
+      long: "%Y.%m.%d %H:%M:%S"
   task: "Pieteikums"
   update: "Izmaiņas"
   create: "Izviedots"
   name: "Nosaukums"
-  description: Apraksts
-  creator_id: Izveidotājs
-  admin_deadline: Admina termiņš
-  employee_deadline: Darbinieka termiņš
-  state: Stāvoklis
-  category_id: Kategorija
-  responsible_id: Atbildīgais admins
-  admin_user_id: Sasaistītais lietotājs
-  user_priority: Darbinieka prioritāte
-  admin_priority: Admina prioritāte
-  closed_by_admin: Aizvēra admins
-  closed_by_employee: Aizvēra darbinieks
-  company_id: Uzņēmums
-  created_at: Izviedots
-  updated_at: Mainīts
-  id: Id
+  description: "Apraksts"
+  creator_id: "Izveidotājs"
+  admin_deadline: "Admina termiņš"
+  employee_deadline: "Darbinieka termiņš"
+  state: "Stāvoklis"
+  category_id: "Kategorija"
+  responsible_id: "Atbildīgais admins"
+  admin_user_id: "Sasaistītais lietotājs"
+  user_priority: "Darbinieka prioritāte"
+  admin_priority: "Admina prioritāte"
+  closed_by_admin: "Aizvēra admins"
+  closed_by_employee: "Aizvēra darbinieks"
+  company_id: "Uzņēmums"
+  created_at: "Izviedots"
+  updated_at: "Mainīts"
+  id: "Id"
