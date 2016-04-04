@@ -15,7 +15,7 @@ module ActiveAdmin
             end
             div :style => "clear:both;"
             if authorized?(ActiveAdmin::Auth::DESTROY, comment)
-              text_node link_to I18n.t('active_admin.comments.delete'), comments_url(comment.id), method: :delete, data: { confirm: I18n.t('active_admin.comments.delete_confirmation') }
+              text_node (link_to "#{I18n.t('active_admin.comments.delete')}", comments_url(comment.id), method: :delete, data: { confirm: I18n.t('active_admin.comments.delete_confirmation') })<<" | "
             end
             if authorized?(ActiveAdmin::Auth::UPDATE, comment)
               text_node link_to I18n.t('active_admin.comments.edit'), "/admin/active_admin_comments/#{comment.id}/edit"

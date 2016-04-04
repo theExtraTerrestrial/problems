@@ -14,13 +14,24 @@ $(document).ready(function(){
   	$(this).closest('tr').effect('highlight');
   });
 
-  if ($('.ul-div').children().length > 2){
-  	$(this).children(":not.('.ul-header')").toggle();
-  };
-
   $('.read-more').on('click', function(e){
   	e.preventDefault();
-  	$(this).parent().toggle();
+  	$('.ul-main').toggle();
   });
 
+  // function toggleElements (a) {
+  //   var divs = document.getElementsByClassName(a);
+  //   var i;
+  //   var x;
+  //   for (i = 0; i < divs.length; i++) {
+  //     if (divs[i].children.length > 2) {
+  //       for (x = 0; x < divs[i].children.length; x++) {
+  //         var child = divs[i].children[x];
+  //         if (!(child.className == 'ul-header')) {
+  //         child.style.display = 'none';
+  //         };
+  //       };
+  //     };
+  //   };
+  // }
 })

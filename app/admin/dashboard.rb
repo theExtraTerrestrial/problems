@@ -1,4 +1,3 @@
-require 'nokogiri'
 ActiveAdmin.register_page "Dashboard" do
 
   menu priority: 1, label: 'Galvenais panelis'
@@ -7,19 +6,23 @@ ActiveAdmin.register_page "Dashboard" do
     columns do
       if can? :manage, AdminUser
         panel 'Jaunākie notikumi' do
-          table_for PaperTrail::Version.all do
+          table_for PaperTrail::Version.last(5) do
             column 'Atbildīgais' do |v| link_to AdminUser.find(v.whodunnit).full_name, admin_admin_user_path(v.whodunnit) rescue "-" end
             column 'Resursa tips' do |v| I18n.t(v.item_type.downcase) end
             column 'Notikums' do |v| I18n.t (v.event) end
             column 'Izmaiņas' do |v| 
-              div class: "ul-div" do
-                ul do
-                  v.changeset.to_a.each do |key,val| 
-                    a = "#{I18n.t(key).titleize}: #{val.join(' => ')}"
-                    if key == v.changeset.to_a[0][0]
-                      div class: 'ul-header' do li link_to "#{truncate(a.html_safe, length: 30, omission: '..Vairāk')}", '#', class: "read-more" end
-                    else li a
-                    end 
+              div do
+                ul class: 'ul' do
+                  if v.changeset.to_a.length > 2
+                    truncated_list = v.changeset.to_a.take(2)
+                    truncated_list.each do |key,val| 
+                      li "#{I18n.t(key).titleize}: #{val.join(' => ')}"
+                    end
+                    li link_to "...", admin_root_path
+                  else
+                    v.changeset.to_a.each do |key,val|
+                      li "#{I18n.t(key).titleize}: #{val.join(' => ')}"
+                    end
                   end
                 end
               end

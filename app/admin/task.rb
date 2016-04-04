@@ -128,11 +128,11 @@ ActiveAdmin.register Task do
   end
 
   index title: proc{'Pieteikumu saraksts'} do 
-    column 'Temats', :name do |t| link_to t.name, admin_task_path(t) end
+    column 'Temats', sortable: :name do |t| link_to t.name, admin_task_path(t) end
     # column 'Aprkasts', :description do |t| truncate(t.description, length: 30) end
-    column 'Kategorija' do |t| Category.find(t.category_id).name end
+    column 'Kategorija', sortable: :category_id do |t| Category.find(t.category_id).name end
     # column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "Nav noteikts" end
-    column 'Izveidotājs' do |t| AdminUser.find(t.creator_id).full_name end
+    column 'Izveidotājs', sortable: :creator_id do |t| AdminUser.find(t.creator_id).full_name end
     if can? :manage, AdminUser
       column 'Atbildīgais lietotājs' do |t| 
         best_in_place t, :responsible_id , as: :select, url: [:admin, t], collection: AdminUser.admins,
@@ -170,7 +170,7 @@ ActiveAdmin.register Task do
       column do
         panel 'Pieteikuma informācija' do
           attributes_table_for task do
-            row 'Uzņēmums', :company_id do |t| t.company.name end
+            row 'Uzņēmums', :company_id do |t| t.company.name rescue '-' end
             row 'Temats', :name do |t| t.name end
             row 'Kategorija' do |t| Category.find(t.category_id).name end
             row 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "-" end

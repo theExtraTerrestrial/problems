@@ -13,7 +13,8 @@ class Ability
         can :read, :all
 
         can :create, ActiveAdmin::Comment
-        can :manage, ActiveAdmin::Comment, author_id: user.id
+        can :update, ActiveAdmin::Comment, author_id: user.id
+        cannot :read, ActiveAdmin::Comment
 
         can :create, Task
         cannot :read, Task
@@ -30,6 +31,7 @@ class Ability
         cannot :manage, Category
         cannot :manage, Company
         cannot :manage, Setting
+        cannot :read, PaperTrail::Version
     else 
         cannot :manage, :all
     end
