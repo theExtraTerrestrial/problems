@@ -124,7 +124,9 @@ ActiveAdmin.register Task do
         i.input :description, as: :string, label: 'Aprkasts'
       end
     end
-    f.actions
+    f.actions do
+      f.action(:submit) + f.cancel_link(request.referer)
+    end
   end
 
   index title: proc{'Pieteikumu saraksts'} do 

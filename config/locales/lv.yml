@@ -1,4 +1,6 @@
 lv:
+  "true": Jā
+  "false": Nē
   active_admin:
     comments:
       delete: "Dzēst"
@@ -42,6 +44,7 @@ lv:
   time:
     formats:
       long: "%Y.%m.%d %H:%M:%S"
+  task: "Pieteikums"
   task: "Pieteikums"
   update: "Izmaiņas"
   create: "Izviedots"

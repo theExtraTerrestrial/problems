@@ -268,3 +268,7 @@ ActiveAdmin.setup do |config|
   #
   # config.include_default_association_filters = true
 end
+
+module ActiveAdmin::ViewHelpers
+  include ApplicationHelper
+end
