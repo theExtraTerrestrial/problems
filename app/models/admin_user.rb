@@ -5,6 +5,7 @@ class AdminUser < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
   belongs_to :company
   belongs_to :role
+  has_many :categories
   has_many :tasks
 
   scope :admins, -> { where(role_id: 1) }

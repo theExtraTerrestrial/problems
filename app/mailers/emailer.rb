@@ -4,10 +4,10 @@ class Emailer < ActionMailer::Base
   # ActionMailer::Base.delivery_method = :smtp
   ActionMailer::Base.smtp_settings = {
       :address  => 'mail.telia.lv',
-      # :address  => 'localhost',
-      # :port  => 1025,
       :openssl_verify_mode  => 'none',
       :host => 'mail.telia.lv'
+      # :address  => 'localhost',
+      # :port  => 1025,
     }
 
   default_url_options[:host] = "#{DOMAIN_NAME}"
@@ -17,7 +17,11 @@ class Emailer < ActionMailer::Base
     @object = task
     # raise @object.inspect
     mail(
-      :to => Setting.uncached_value_for('main_admin_email'),
+      :to => unless Setting.where("name=?", @object.category.name+"-email").nil?
+        Setting.uncached_value_for('main_admin_email')
+      else
+        Setting.uncached_value_for("#{@object.category.name}-email")
+      end,
       :from => "Atbalsts SDM <noreply@sdm.lv>",
       :subject => "Jauns pieteikums"
     )
@@ -29,7 +33,7 @@ class Emailer < ActionMailer::Base
     mail(
       :to => "#{AdminUser.find(@object.reciever_id).email}",
       :from => "#{AdminUser.find(@object.sender_id).full_name} <#{AdminUser.find(@object.sender_id).email}>",
-      :subject => "#{@object.title}"
+      :subject => "Jauns ziņojums"
     )
   end
 
@@ -41,5 +45,7 @@ class Emailer < ActionMailer::Base
       :subject => "Jauns komentārs"
     )
   end
+
+
 
 end

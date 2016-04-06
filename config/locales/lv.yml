@@ -1,6 +1,6 @@
 lv:
-  "true": Jā
-  "false": Nē
+  "true": "Jā"
+  "false": "Nē"
   active_admin:
     comments:
       delete: "Dzēst"
@@ -35,15 +35,20 @@ lv:
     models:
       task: 'Pieteikums'
       task_image: 'Pieteikuma attēls'
+    attributes:
+      task:
+        Name: 'Temats'
     errors: 
       messages:
         blank: "Lauks ir obligāti jāaizpilda."
   date:
     formats:
       long: "%Y.%m.%d"
+      default: "%Y.%m.%d"
   time:
     formats:
       long: "%Y.%m.%d %H:%M:%S"
+      default: "%Y.%m.%d %H:%M:%S"
   task: "Pieteikums"
   task: "Pieteikums"
   update: "Izmaiņas"

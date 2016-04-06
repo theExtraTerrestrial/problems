@@ -81,6 +81,7 @@ ActiveAdmin.register Task do
   end
 
   
+  filter :name, as: :string, label: 'Temats'
   filter :state, as: :select, label: 'Stāvoklis', collection: Task::STATUS.each{|k,v| [k,v] }
   filter :company, label: 'Uzņēmums', if: proc {can? :manage, AdminUser}
   filter :category, label: 'Kategorija'
@@ -231,7 +232,7 @@ ActiveAdmin.register Task do
         table_for task.task_emails do
           column 'Temats' do |m| link_to m.title, admin_task_task_email_path(task_id: params[:id], id: m.id) end 
           column 'Sūtītājs' do |m| AdminUser.find(m.sender_id).email end
-          column 'Nosūtīts' do |m| m.created_at end
+          column 'Nosūtīts' do |m| I18n.l(m.created_at) end
         end
       end
     end

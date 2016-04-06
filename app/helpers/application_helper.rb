@@ -45,6 +45,13 @@ module ApplicationHelper
             temp_arr << temp_v
           end
           arr << [k, temp_arr]
+        elsif k == "closed_by_admin" or k == "closed_by_employee"
+          temp_arr = []
+          v.each do |e|
+            temp_v = e.nil? ? " " : I18n.t(e)
+            temp_arr << temp_v
+          end
+          arr << [k, temp_arr]
         end      
       end
     end
