@@ -137,9 +137,8 @@ ActiveAdmin.register Task do
     # column 'Atbildīgais lietotājs' do |t| AdminUser.find(t.responsible_id).full_name rescue "Nav noteikts" end
     column 'Izveidotājs', sortable: :creator_id do |t| AdminUser.find(t.creator_id).full_name end
     if can? :manage, AdminUser
-      column 'Atbildīgais lietotājs' do |t| 
-        best_in_place t, :responsible_id , as: :select, url: [:admin, t], collection: AdminUser.admins,
-        value: AdminUser.find(t.responsible_id).full_name, class: "best_in_place" rescue "Nav noteikts"
+      column 'Atbildīgais lietotājs', :responsible_id do |t| 
+        best_in_place t, :responsible_id, :as => :select, url: [:admin, t], :collection => AdminUser.admins.map{|u| [u.id, u.full_name]} rescue '-'
       end
       column 'Uzņēmums' do |t| Company.find(t.company_id).name rescue "-" end 
       column 'Admina prioritāte', :admin_priority do |t|

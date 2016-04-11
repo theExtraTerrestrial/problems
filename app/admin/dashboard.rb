@@ -16,12 +16,12 @@ ActiveAdmin.register_page "Dashboard" do
                   if version_changeset_refiner(v).length > 2
                     truncated_list = version_changeset_refiner(v).take(2)
                     truncated_list.each do |key,val|
-                      li "#{I18n.t(key).titleize}: #{val.join(' => ')}"
+                      li "#{I18n.t(key).titleize}: #{val.join(' => ')}" rescue '-'
                     end
                     li link_to "...", {controller: "admin/#{v.item_type.underscore.pluralize}", action: :show, id: v.item_id}
                   else
                     version_changeset_refiner(v).each do |key,val|
-                      li "#{I18n.t(key).titleize}: #{val.join(' => ')}"
+                      li "#{I18n.t(key).titleize}: #{val.join(' => ')}" rescue 'a'
                     end
                   end
                 end
