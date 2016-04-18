@@ -17,11 +17,7 @@ class Emailer < ActionMailer::Base
     @object = task
     # raise @object.inspect
     mail(
-      :to => unless Setting.where("name=?", @object.category.name+"-email").nil?
-        Setting.uncached_value_for('main_admin_email')
-      else
-        Setting.uncached_value_for("#{@object.category.name}-email")
-      end,
+      :to => spec_admin = Category.find(@object.category.id).admin_user; spec_admin.nil? ? Setting.uncached_value_for('main_admin_email') : spec_admin.email,
       :from => "Atbalsts SDM <noreply@sdm.lv>",
       :subject => "Jauns pieteikums"
     )

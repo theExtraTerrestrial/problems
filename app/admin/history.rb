@@ -30,7 +30,13 @@ ActiveAdmin.register PaperTrail::Version, as: 'versions' do
           div class: 'text_display' do 
             if version.object.blank?
               li "---"
-            else li version.object
+            else arr = version.object.split(/(\w*:[^\d])/);
+              arr = arr.delete_at(0);
+              temp_arr = [];
+              (0...arr.length).step(2) {|n| temp_arr << self[n,2]}
+              temp_arr do |line|
+                li line
+              end
             end
           end
         end

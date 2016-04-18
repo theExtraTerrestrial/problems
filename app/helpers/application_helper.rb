@@ -24,7 +24,7 @@ module ApplicationHelper
         elsif k == "responsible_id" or k == "admin_user_id" or k == "creator_id"
           temp_arr = []
           v.each do |e|
-            next if e.nil?
+            next if e.nil? or e==0
             temp_v = AdminUser.find(e).full_name
             temp_arr << temp_v
           end
