@@ -8,6 +8,12 @@ ActiveAdmin.register TaskEmail do
   navigation_menu :default
 
   config.breadcrumb = false
+  
+  actions :all, except: [:destroy, :edit]
+
+  action_item :back, only: :show do
+    link_to 'Atpakaļ', request.referer
+  end
 
   controller do
   	def create
@@ -18,9 +24,9 @@ ActiveAdmin.register TaskEmail do
     f.inputs do
       f.input :title, label: 'Virsraksts'
       f.input :description, as: :text, label: 'Saturs'
-      # f.input :reciever_id, as: :select, collection: AdminUser.all.map {|u| ["#{u.email}", u.id] }, include_blank: false, label: 'Saņēmējs'
-      f.input :reciever_id, input_html: {value: 999}
-      f.input :sender_id, as: :hidden, input_html: {value: params[:sender_id]}, label: 'Sūtītājs'
+      f.input :reciever_id, as: :select, collection: options_for_select(AdminUser.all.map {|u| ["#{u.email}", u.id] }, params[:reciever_id]), include_blank: false, label: 'Saņēmējs'
+      # f.input :reciever_id, input_html: {value: 999}
+      f.input :sender_id, as: :hidden, input_html: {value: current_admin_user.id||params[:sender_id]}, label: 'Sūtītājs'
     end
     f.actions
   end

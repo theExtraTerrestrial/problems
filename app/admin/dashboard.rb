@@ -7,9 +7,9 @@ ActiveAdmin.register_page "Dashboard" do
       if can? :manage, AdminUser
         panel 'Jaunākie notikumi' do
           table_for PaperTrail::Version.last(5) do
-            column 'Izraisītājs' do |v| link_to AdminUser.find(v.whodunnit).full_name, admin_admin_user_path(v.whodunnit) rescue "-" end
-            column 'Resursa tips' do |v| link_to v.item_type.constantize.find(v.item_id).name, {controller: "admin/#{v.item_type.underscore.pluralize}", action: :show, id: v.item_id} end
             column 'Notikums' do |v| I18n.t (v.event) end
+            column 'Izraisītājs' do |v| link_to AdminUser.find(v.whodunnit).full_name, admin_admin_user_path(v.whodunnit) rescue "-" end
+            column 'Resurss' do |v| link_to v.item_type.constantize.find(v.item_id).name, {controller: "admin/#{v.item_type.underscore.pluralize}", action: :show, id: v.item_id} end
             column 'Izmaiņas' do |v| 
               div do
                 ul class: 'ul' do
