@@ -30,12 +30,10 @@ ActiveAdmin.register PaperTrail::Version, as: 'versions' do
           div class: 'text_display' do 
             if version.object.blank?
               li "---"
-            else arr = version.object.split(/(\w*:[^\d])/);
-              arr = arr.delete_at(0);
-              temp_arr = [];
-              (0...arr.length).step(2) {|n| temp_arr << self[n,2]}
-              temp_arr do |line|
-                li line
+            else arr = version.object.split(/(\w*:[^\d])/).each {|n| n.gsub!(/\n/, " ")};
+              arr.delete_at(0);
+              arr.chunk(2).each do |x|
+                li x
               end
             end
           end
@@ -43,12 +41,21 @@ ActiveAdmin.register PaperTrail::Version, as: 'versions' do
         panel 'Objekta izmaiņas' do
           div class: 'text_display' do 
             version_changeset_refiner(version).each do |key,val|
-              li "#{I18n.t(key).titleize}: #{val.join(' => ')}"
+              li "#{key.humanize}: #{val.join(' => ')}"
             end
           end
         end
       end
     end
+  end
+
+end
+
+class Array
+
+  def chunk(sizen=2, chunks=[])
+    (0...self.length).step(sizen) { |n| chunks << self[n,sizen] }
+    return chunks
   end
 
 end

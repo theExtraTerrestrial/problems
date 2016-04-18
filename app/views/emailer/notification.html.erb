@@ -7,7 +7,7 @@
               <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Vārds, Uzvārds: " %> </span><%= " #{@object.admin_user.full_name}" %></td></tr>
               <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "E-pasta adrese: " %> </span><%= " #{@object.admin_user.email}" %></td></tr>
               <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Temats: " %> </span><%= link_to @object.name, "#{DOMAIN_NAME}/admin/tasks/#{@object.id}/" %></td></tr>
-              <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Darbinieka prioritāte: " %> </span><%= " #{@object.user_priority}" %></td></tr>
+              <tr height="20" style="border-bottom: 1px solid #CCC;"><td><span style="font-weight:bold"> <%= "Darbinieka prioritāte: " %> </span><%= " #{Task::PRIORITY.key(@object.user_priority)}" %></td></tr>
         </table>
     <td>
 </table>
